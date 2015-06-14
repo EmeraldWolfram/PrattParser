@@ -25,7 +25,7 @@ void setUp(void){}
 
 void tearDown(void){}
 
-void xtest_add2Tokens_given_2_ADD_3_should_return_Tokens_Tree_with_value(void){
+void test_add2Tokens_given_2_ADD_3_should_return_Tokens_Tree_with_value(void){
   IntegerToken* leftTk = malloc(sizeof(IntegerToken*));
   IntegerToken* rightTk = malloc(sizeof(IntegerToken*));
   OperatorToken* addToken = malloc(sizeof(OperatorToken*)+(sizeof(Token*))*2);   
@@ -37,9 +37,9 @@ void xtest_add2Tokens_given_2_ADD_3_should_return_Tokens_Tree_with_value(void){
     addToken->symbol = "+";
     addToken->arity = INFIX;
   
+  createOperatorToken_ExpectAndReturn("+", INFIX, addToken);
   createIntegerToken_ExpectAndReturn(2,leftTk);
   createIntegerToken_ExpectAndReturn(3,rightTk);
-  createOperatorToken_ExpectAndReturn("+", INFIX, addToken);
   
   addToken = (OperatorToken*)add2Tokens(2,"+",3);
   

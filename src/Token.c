@@ -47,12 +47,23 @@
 
 OperatorToken *createOperatorToken(char *symbol, Arity arity){
   int i;
-  if(arity == INFIX)
-    i = 2;
-  else
-    i = 1;
-
+    if(arity == INFIX)
+      i = 2;
+    else
+      i = 1;
+      
   OperatorToken* op = malloc(sizeof(OperatorToken*)+ sizeof(Token*) * i);
+  
+    if(*symbol == '+')
+      op->bindingPower = ADD;
+    else if(*symbol == '*')
+      op->bindingPower = MUL;
+    else if(*symbol == '/')
+      op->bindingPower = DIV;
+    else if(*symbol == '-')
+      op->bindingPower = SUB;
+    else
+      op->bindingPower = 0;
   
   op->type = TOKEN_OPERATOR_TYPE;
   op->symbol = symbol;
@@ -63,9 +74,7 @@ OperatorToken *createOperatorToken(char *symbol, Arity arity){
 
 IntegerToken *createIntegerToken(int value){
   IntegerToken* intTk = malloc(sizeof(IntegerToken*));
-  
-  intTk->type = TOKEN_INTEGER_TYPE;
-  intTk->value = value;
-
+    intTk->type = TOKEN_INTEGER_TYPE;
+    intTk->value = value;
   return intTk;  
 }

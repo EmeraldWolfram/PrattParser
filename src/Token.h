@@ -1,5 +1,9 @@
 #ifndef Token_H
 #define Token_H
+#define MUL 30
+#define DIV 30
+#define SUB 20
+#define ADD 20
 
 typedef enum {
   TOKEN_INTEGER_TYPE,
@@ -32,6 +36,7 @@ typedef struct{
   TokenType type;
   char *symbol;
   Arity arity;
+  int bindingPower;
 //  Associativity assoc;
   Token *token[0];
 } OperatorToken;
