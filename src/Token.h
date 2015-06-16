@@ -4,6 +4,7 @@
 #define DIV 30
 #define SUB 20
 #define ADD 20
+#define EOT 0
 
 typedef enum {
   TOKEN_INTEGER_TYPE,
@@ -15,13 +16,6 @@ typedef enum {
   INFIX,
   POSTFIX,
 } Arity;
-
-typedef enum {
-  NONE,
-  LEFT_TO_RIGHT,
-  RIGHT_TO_LEFT,
-}Associativity;
-
 
 typedef struct {
   TokenType type;
@@ -37,12 +31,9 @@ typedef struct{
   char *symbol;
   Arity arity;
   int bindingPower;
-//  Associativity assoc;
   Token *token[0];
 } OperatorToken;
 
-
-// Symbol can be "++", "*", "[", ":"
 OperatorToken *createOperatorToken(char *symbol, Arity arity);
 IntegerToken *createIntegerToken(int value);
 

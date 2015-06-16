@@ -1,5 +1,4 @@
 #include "runOperation.h"
-#include "checkTokens.h"
 #include "AddToken.h"
 #include "Token.h"
 #include <stdlib.h>
