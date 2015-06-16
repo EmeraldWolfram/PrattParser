@@ -37,5 +37,14 @@ void test_parser(void){
   getToken_ExpectAndReturn((Token*)lastIntToken);
   getToken_ExpectAndReturn((Token*)lastOprToken);
  
-  parser(0);
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((OperatorToken*)testToken)->type);
+  TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,((OperatorToken*)testToken)->token[0]->type);
+  TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,((OperatorToken*)testToken)->token[1]->type);
+  
+  TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
+  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+  TEST_ASSERT_EQUAL(3,((IntegerToken*)((OperatorToken*)testToken)->token[1])->value);
 }

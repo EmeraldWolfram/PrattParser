@@ -19,8 +19,6 @@ Token* parser(int prevBindingPower){
   else{
     return (Token*)nextIntToken;  //Yen, this is the part, I will chop the list if like this! Make it continue
   }
-    
-  
   
   return (Token*)nextOprToken;
 }
