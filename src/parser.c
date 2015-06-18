@@ -9,7 +9,7 @@ Token* parser(int prevBindingPower){
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken*));
   
   nextIntToken = (IntegerToken*)getToken();
-  nextOprToken = (OperatorToken*)getToken();
+  nextOprToken = (OperatorToken*)peepToken();
 
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken->token[0] = (Token*)nextIntToken;
