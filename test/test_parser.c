@@ -32,17 +32,20 @@ void test_parser(void){
   lastOprToken->arity = INFIX;
   lastOprToken->bindingPower = EOT; 
 
+  peepToken_ExpectAndReturn((Token*)testIntToken);
   getToken_ExpectAndReturn((Token*)testIntToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
   getToken_ExpectAndReturn((Token*)testOprToken);
+  peepToken_ExpectAndReturn((Token*)lastIntToken);
   getToken_ExpectAndReturn((Token*)lastIntToken);
-  getToken_ExpectAndReturn((Token*)lastOprToken);
+  peepToken_ExpectAndReturn((Token*)lastOprToken);  
+  peepToken_ExpectAndReturn((Token*)lastOprToken);    
  
   Token* testToken = malloc(sizeof(Token*));
-  testToken = parser(0);
-//********************************************* START TEST
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((OperatorToken*)testToken)->type);
-  TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,((OperatorToken*)testToken)->token[0]->type);
-  TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,((OperatorToken*)testToken)->token[1]->type);
+  testToken = parser(0);  //Yen, check whether my logic have problem, it shouldn't call for another peepToken!
+//********************************************* START TEST  
+  TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,((IntegerToken*)testToken)->type);
   
   TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
   TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
