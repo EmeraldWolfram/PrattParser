@@ -11,8 +11,9 @@ Token* parser(int prevBindingPower){
   OperatorToken* currentToken = malloc(sizeof(OperatorToken));
   Token* nextToken = malloc(sizeof(Token));
   
+  
   do{
-    nextToken = peepToken();
+    nextToken = (Token*)peepToken();
     if(nextToken->type == TOKEN_INTEGER_TYPE){
       nextIntToken = (IntegerToken*)getToken();
       nextOprToken = (OperatorToken*)peepToken();
@@ -20,7 +21,7 @@ Token* parser(int prevBindingPower){
     else{
       nextOprToken = (OperatorToken*)nextToken;
     }
-    currentToken = (OperatorToken*)peepToken();
+    
     if((nextOprToken->bindingPower)> prevBindingPower){
       nextOprToken = (OperatorToken*)getToken();
       nextOprToken->token[0] = (Token*)nextIntToken;
@@ -29,6 +30,7 @@ Token* parser(int prevBindingPower){
     else{
       return (Token*)nextIntToken;
     }
+    currentToken = (OperatorToken*)peepToken();
   }while(strcmp(currentToken->symbol, "$") != 0);
-  return (Token*)nextOprToken->token[0];
+  return (Token*)nextOprToken;
 }
