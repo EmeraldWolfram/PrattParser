@@ -3,6 +3,12 @@
 
 #include <stdint.h>
 
+#define SUB 20
+#define ADD 20
+#define MUL 30
+#define DIV 30
+#define EOT 0
+
 typedef enum {
 	TOKEN_UNKNOWN_TYPE,
 	TOKEN_INTEGER_TYPE,
@@ -56,6 +62,7 @@ typedef struct {
   uint32_t startColumn;
   uint32_t length;
 	char *symbol;
+  int bindingPower;
 	Arity arity;
 	Token *token[0];
 } OperatorToken;

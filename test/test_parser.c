@@ -10,10 +10,10 @@ void setUp(void){}
 void tearDown(void){}
 
 void test_parser(void){
-  OperatorToken* testOprToken = malloc(sizeof(OperatorToken*) + 2*(sizeof(Token*)));
-  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken*) + sizeof(Token*));
-  IntegerToken* testIntToken = malloc(sizeof(IntegerToken*));
-  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken*));
+  OperatorToken* testOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
+  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken) + sizeof(Token*));
+  IntegerToken* testIntToken = malloc(sizeof(IntegerToken));
+  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken));
 //******************************************** FOR MOCKING
   testIntToken->type = TOKEN_INTEGER_TYPE;
   testIntToken->value = 2;
