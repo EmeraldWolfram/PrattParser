@@ -9,7 +9,19 @@ void setUp(void){}
 
 void tearDown(void){}
 
-void test_parser(void){
+/**
+ *
+ *  Obtain tokens of 2 , + , 3
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (+)
+ *      / \
+ *    (2) (3)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_ADD_3_EOT(void){
   OperatorToken* testOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   OperatorToken* lastOprToken = malloc(sizeof(OperatorToken) + sizeof(Token*));
   IntegerToken* testIntToken = malloc(sizeof(IntegerToken));
@@ -44,6 +56,7 @@ void test_parser(void){
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST  
+  TEST_ASSERT_NOT_NULL(testToken);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((IntegerToken*)testToken)->type);
   
   TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
@@ -51,13 +64,27 @@ void test_parser(void){
   TEST_ASSERT_EQUAL(3,((IntegerToken*)((OperatorToken*)testToken)->token[1])->value);
 }
 
+/**
+ *
+ *  Obtain tokens of 2 , + , 3 , * , 4
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (+)
+ *      / \
+ *    (2) (*)
+ *        / \
+ *      (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
 void test_parser_with_2_ADD_3_MUL_4_EOT(void){
-  OperatorToken* testOprToken_1 = malloc(sizeof(OperatorToken*) + 2*(sizeof(Token*)));
-  OperatorToken* testOprToken_2 = malloc(sizeof(OperatorToken*) + 2*(sizeof(Token*)));
-  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken*) + sizeof(Token*));
-  IntegerToken* testIntToken_1 = malloc(sizeof(IntegerToken*));
-  IntegerToken* testIntToken_2 = malloc(sizeof(IntegerToken*));
-  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken*));
+  OperatorToken* testOprToken_1 = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
+  OperatorToken* testOprToken_2 = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
+  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken) + sizeof(Token*));
+  IntegerToken* testIntToken_1 = malloc(sizeof(IntegerToken));
+  IntegerToken* testIntToken_2 = malloc(sizeof(IntegerToken));
+  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken));
 //******************************************** FOR MOCKING
   testIntToken_1->type = TOKEN_INTEGER_TYPE;
   testIntToken_1->value = 2;
@@ -78,7 +105,7 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   printf("*test BindingPower: %d\n", testOprToken_2->bindingPower);
 //******************************************** FOR MOCKING
   lastIntToken->type = TOKEN_INTEGER_TYPE;
-  lastIntToken->value = 3; 
+  lastIntToken->value = 4; 
 //******************************************** FOR MOCKING
   lastOprToken->type = TOKEN_OPERATOR_TYPE;
   lastOprToken->symbol = "$";
@@ -102,9 +129,12 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST  
+  TEST_ASSERT_NOT_NULL(testToken);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((IntegerToken*)testToken)->type);
   
   TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
   TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
-  TEST_ASSERT_EQUAL("*",((IntegerToken*)((OperatorToken*)testToken)->token[1])->value);
+  TEST_ASSERT_EQUAL("*",((OperatorToken*)((OperatorToken*)testToken)->token[1])->symbol);
+  TEST_ASSERT_EQUAL(3,((IntegerToken*)((OperatorToken*)((OperatorToken*)testToken)->token[1])->token[0])->value);
+  TEST_ASSERT_EQUAL(4,((IntegerToken*)((OperatorToken*)((OperatorToken*)testToken)->token[1])->token[1])->value);
 }
