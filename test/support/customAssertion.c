@@ -1,5 +1,6 @@
 #include "customAssertion.h"
 #include "unity.h"
+#include "Token.h"
 
 // void customTestAssertCoordinate(float within,
                                // float x,
@@ -15,8 +16,15 @@
     // CUSTOM_TEST_FAIL(lineNo, "Expected x = %f, but was %f", z, actual.z);
 // }
 
-void customTestAssertOperator(char *symbol, int value1, int value2, OperatorToken *oper){
- TEST_ASSERT_EQUAL_STRING(symbol,oper->symbol);
- TEST_ASSERT_EQUAL(value1,((IntegerToken*)(oper->token[0]))->value);
- TEST_ASSERT_EQUAL(value2,((IntegerToken*)(oper->token[1]))->value);
+void customTestAssertOperator(char *symbol, Token* token1, Token* token2, OperatorToken *oper){
+  TEST_ASSERT_EQUAL_STRING(symbol,oper->symbol);
+  if(token1->type != TOKEN_OPERATOR_TYPE)
+    TEST_ASSERT_EQUAL(((IntegerToken*)token1)->value, ((IntegerToken*)(oper->token[0]))->value);
+  else
+    TEST_ASSERT_EQUAL_STRING(((OperatorToken*)token1)->symbol,((OperatorToken*)oper->token[0])->symbol);
+  
+  if(token2->type != TOKEN_OPERATOR_TYPE)
+    TEST_ASSERT_EQUAL(((IntegerToken*)token2)->value, ((IntegerToken*)(oper->token[1]))->value);
+  else
+    TEST_ASSERT_EQUAL_STRING(((OperatorToken*)token2)->symbol,((OperatorToken*)oper->token[1])->symbol);
 }

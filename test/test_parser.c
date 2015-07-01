@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 OperatorToken* mul;
-char multiply = '*';
+char* multiply = "*";
+char* addition = "+";
 IntegerToken* value_3;
 IntegerToken* value_4;
 void setUp(void){}
@@ -48,16 +49,15 @@ void test_parser_with_2_ADD_3_EOT(void){
 //MOCK peepToken and getToken
   bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);
   bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);
-  
+ 
+ 
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST  
   TEST_ASSERT_NOT_NULL(testToken);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((IntegerToken*)testToken)->type);
   
-  TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
-  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
-  TEST_ASSERT_EQUAL(3,((IntegerToken*)((OperatorToken*)testToken)->token[1])->value);
+  TEST_ASSERT_EQUAL_OPERATOR(addition,createIntegerToken(2),createIntegerToken(3),(OperatorToken*)testToken);
 }
 
 /**
@@ -95,13 +95,11 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST  
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((IntegerToken*)testToken)->type);
-  TEST_ASSERT_EQUAL('+', *((OperatorToken*)testToken)->symbol);
-  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-  
+  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*",INFIX), (OperatorToken*)testToken);
   mul = (OperatorToken*)((OperatorToken*)testToken)->token[1];
-  TEST_ASSERT_EQUAL_OPERATOR(&multiply, 3, 4, mul);  
+  TEST_ASSERT_EQUAL_OPERATOR(multiply, createIntegerToken(3), createIntegerToken(4), mul);  
 
 }
 
