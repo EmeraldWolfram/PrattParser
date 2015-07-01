@@ -8,10 +8,10 @@
 // #define PRINT_MSG(x)      printf("%s, I am in line %d\n",x, __LINE__)
 
 
-#define TEST_ASSERT_EQUAL_OPERATOR(symbol, Value1, Value2, oper);\
-           customTestAssertOperator(symbol, Value1, Value2, oper);
+#define TEST_ASSERT_EQUAL_OPERATOR(symbol, token1, token2, oper);\
+           customTestAssertOperator(symbol, token1, token2, oper);
  
-void customTestAssertOperator(char *symbol, int value1, int value2, OperatorToken *oper);
+void customTestAssertOperator(char *symbol, Token* token1, Token* token2, OperatorToken *oper);
 
 // ... can represent any arguement.
 // #define CUSTOM_TEST_FAIL(lineNo, msg, ...){                                                       \
