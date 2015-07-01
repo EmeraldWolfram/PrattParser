@@ -1,40 +1,84 @@
 #ifndef Token_H
 #define Token_H
-#define MUL 30
-#define DIV 30
+
+#include <stdint.h>
+
 #define SUB 20
 #define ADD 20
+#define MUL 30
+#define DIV 30
 #define EOT 0
 
-typedef enum {
-  TOKEN_INTEGER_TYPE,
-  TOKEN_OPERATOR_TYPE,
-}TokenType;
+// Token *nud(){
+  // if
+    // return
+  // else
+    // return 
+// }
+
 
 typedef enum {
-  PREFIX,
-  INFIX,
-  POSTFIX,
+	TOKEN_UNKNOWN_TYPE,
+	TOKEN_INTEGER_TYPE,
+	TOKEN_OPERATOR_TYPE,
+	TOKEN_FLOAT_TYPE,
+	TOKEN_STRING_TYPE,
+	TOKEN_IDENTIFIER_TYPE,
+} TokenType;
+
+typedef enum {
+	PREFIX, //-2
+	INFIX,	//2*2
+	POSTFIX	//x++
 } Arity;
 
+typedef enum {
+	NONE,
+	LEFT_TO_RIGHT,
+	RIGHT_TO_LEFT,
+} Associativity;
+
 typedef struct {
-  TokenType type;
-}Token;
+	TokenType type;
+  uint32_t startColumn;
+  uint32_t length;
+  // nud();
+  // led();
+} Token;
 
-typedef struct{
-  TokenType type;
-  int value;
-}IntegerToken;
+typedef struct {
+	TokenType type;
+  uint32_t startColumn;
+  uint32_t length;
+	int value;
+} IntegerToken;
 
-typedef struct{
-  TokenType type;
-  char *symbol;
-  Arity arity;
+typedef struct {
+	TokenType type;
+  uint32_t startColumn;
+  uint32_t length;
+	double value;
+} FloatToken;
+
+typedef struct {
+	TokenType type;
+  uint32_t startColumn;
+  uint32_t length;
+	char *name;
+} IdentifierToken, StringToken;
+
+typedef struct {
+	TokenType type;
+  uint32_t startColumn;
+  uint32_t length;
+	char *symbol;
   int bindingPower;
-  Token *token[0];
+	Arity arity;
+	Token *token[0];
 } OperatorToken;
 
-OperatorToken *createOperatorToken(char *symbol, Arity arity);
-IntegerToken *createIntegerToken(int value);
+Token *createOperatorToken(char *symbol, Arity AR);
+Token *createIntegerToken(int value);
 
 #endif // Token_H
+

@@ -26,9 +26,9 @@ void setUp(void){}
 void tearDown(void){}
 
 void test_add2Tokens_given_2_ADD_3_should_return_Tokens_Tree_with_value(void){
-  IntegerToken* leftTk = malloc(sizeof(IntegerToken*));
-  IntegerToken* rightTk = malloc(sizeof(IntegerToken*));
-  OperatorToken* addToken = malloc(sizeof(OperatorToken*)+(sizeof(Token*))*2);   
+  IntegerToken* leftTk = malloc(sizeof(IntegerToken));
+  IntegerToken* rightTk = malloc(sizeof(IntegerToken));
+  OperatorToken* addToken = malloc(sizeof(OperatorToken)+(sizeof(Token*))*2);   
     leftTk->type = TOKEN_INTEGER_TYPE;
     rightTk->type = TOKEN_INTEGER_TYPE;
     leftTk->value = 2;
@@ -37,12 +37,12 @@ void test_add2Tokens_given_2_ADD_3_should_return_Tokens_Tree_with_value(void){
     addToken->symbol = "+";
     addToken->arity = INFIX;
   
-  createOperatorToken_ExpectAndReturn("+", INFIX, addToken);
-  createIntegerToken_ExpectAndReturn(2,leftTk);
-  createIntegerToken_ExpectAndReturn(3,rightTk);
+  createOperatorToken_ExpectAndReturn("+", INFIX, (Token*)addToken);
+  createIntegerToken_ExpectAndReturn(2,(Token*)leftTk);
+  createIntegerToken_ExpectAndReturn(3,(Token*)rightTk);
   
   addToken = (OperatorToken*)add2Tokens(2,"+",3);
-  
+ 
   TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,addToken->token[0]->type);
   TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,addToken->token[1]->type);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,addToken->type);

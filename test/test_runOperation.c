@@ -11,10 +11,10 @@ void tearDown(void){}
 
 void test_runOperation_given_2_add_3_should_return_5(void){
   OperatorToken* operation = malloc(sizeof(OperatorToken) + sizeof(Token*)*2);
-  IntegerToken* leftTk = malloc(sizeof(IntegerToken*));
-  IntegerToken* rightTk = malloc(sizeof(IntegerToken*));  
+  IntegerToken* leftTk = malloc(sizeof(IntegerToken));
+  IntegerToken* rightTk = malloc(sizeof(IntegerToken));  
 
-  operation = createOperatorToken("+", INFIX);
+  operation = (OperatorToken*)createOperatorToken("+", INFIX);
   operation->token[0] = (Token*)leftTk;
   operation->token[1] = (Token*)rightTk;
   

@@ -20,8 +20,8 @@ void tearDown(void){}
  */
 
 void test_createIntegerTokens_given_value_2_and_12_return_IntegerTokens(void){
-  IntegerToken leftTk = *createIntegerToken(2);
-  IntegerToken rightTk = *createIntegerToken(12);
+  IntegerToken leftTk = *(IntegerToken*)createIntegerToken(2);
+  IntegerToken rightTk = *(IntegerToken*)createIntegerToken(12);
 
   TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,leftTk.type);
   TEST_ASSERT_EQUAL(TOKEN_INTEGER_TYPE,rightTk.type);
@@ -32,8 +32,8 @@ void test_createIntegerTokens_given_value_2_and_12_return_IntegerTokens(void){
 
 void test_createOperatorToken_given_symbol_ADD_and_MUL_should_return_OperatorToken(void){
   OperatorToken* addToken = malloc(sizeof(OperatorToken));
-  addToken = createOperatorToken("+",INFIX);
-  OperatorToken mulToken = *createOperatorToken("*", INFIX);
+  addToken = (OperatorToken*)createOperatorToken("+",INFIX);
+  OperatorToken mulToken = *(OperatorToken*)createOperatorToken("*", INFIX);
   
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,addToken->type);
   TEST_ASSERT_EQUAL("+",addToken->symbol);
@@ -48,8 +48,8 @@ void test_createOperatorToken_given_symbol_ADD_and_MUL_should_return_OperatorTok
 
 void test_createOperatorToken_given_symbol_SUB_and_DIV_should_return_OperatorToken(void){
   OperatorToken* subToken = malloc(sizeof(OperatorToken));
-  subToken = createOperatorToken("-",INFIX);
-  OperatorToken divToken = *createOperatorToken("/", INFIX);
+  subToken = (OperatorToken*)createOperatorToken("-",INFIX);
+  OperatorToken divToken = *(OperatorToken*)createOperatorToken("/", INFIX);
   
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,subToken->type);
   TEST_ASSERT_EQUAL("-",subToken->symbol);
