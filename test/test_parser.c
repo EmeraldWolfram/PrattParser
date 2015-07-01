@@ -48,8 +48,7 @@ void test_parser_with_2_ADD_3_EOT(void){
 //MOCK peepToken and getToken
   bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);
   bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);
- 
- 
+  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST  
