@@ -52,7 +52,6 @@ Token *createOperatorToken(char *symbol, Arity AR){
   else
     i = 1;
   
-  
   OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * i);
   
   if(*symbol == '+')
@@ -74,7 +73,7 @@ Token *createOperatorToken(char *symbol, Arity AR){
 }
 
 Token *createIntegerToken(int value){
-  IntegerToken* intTk = malloc(sizeof(IntegerToken*));
+  IntegerToken* intTk = malloc(sizeof(IntegerToken));
     intTk->type = TOKEN_INTEGER_TYPE;
     intTk->value = value;
   return (Token*)intTk;  

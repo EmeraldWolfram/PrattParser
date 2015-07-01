@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "parser.h"
-#include "mock_Token.h"
+#include "Token.h"
 #include "mock_getToken.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,28 +22,12 @@ void tearDown(void){}
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
 void test_parser_with_2_ADD_3_EOT(void){
-  OperatorToken* testOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
-  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken) + sizeof(Token*));
-  IntegerToken* testIntToken = malloc(sizeof(IntegerToken));
-  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken));
-//******************************************** FOR MOCKING
-  testIntToken->type = TOKEN_INTEGER_TYPE;
-  testIntToken->value = 2;
-//******************************************** FOR MOCKING
-  testOprToken->type = TOKEN_OPERATOR_TYPE;
-  testOprToken->symbol = "+";
-  testOprToken->arity = INFIX;
-  testOprToken->bindingPower = ADD;
-  printf("test BindingPower: %d\n", testOprToken->bindingPower);
-//******************************************** FOR MOCKING
-  lastIntToken->type = TOKEN_INTEGER_TYPE;
-  lastIntToken->value = 3; 
-//******************************************** FOR MOCKING
-  lastOprToken->type = TOKEN_OPERATOR_TYPE;
-  lastOprToken->symbol = "$";
-  lastOprToken->arity = INFIX;
-  lastOprToken->bindingPower = EOT; 
+  OperatorToken* testOprToken = (OperatorToken*)createOperatorToken("+",INFIX);
+  OperatorToken* lastOprToken = (OperatorToken*)createOperatorToken("$",POSTFIX);
+  IntegerToken* testIntToken = (IntegerToken*)createIntegerToken(2);
+  IntegerToken* lastIntToken = (IntegerToken*)createIntegerToken(3);
 
+//MOCK peepToken and getToken
   peepToken_ExpectAndReturn((Token*)testIntToken);
   getToken_ExpectAndReturn((Token*)testIntToken);
   peepToken_ExpectAndReturn((Token*)testOprToken);
@@ -79,47 +63,25 @@ void test_parser_with_2_ADD_3_EOT(void){
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
 void test_parser_with_2_ADD_3_MUL_4_EOT(void){
-  OperatorToken* testOprToken_1 = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
-  OperatorToken* testOprToken_2 = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
-  OperatorToken* lastOprToken = malloc(sizeof(OperatorToken) + sizeof(Token*));
-  IntegerToken* testIntToken_1 = malloc(sizeof(IntegerToken));
-  IntegerToken* testIntToken_2 = malloc(sizeof(IntegerToken));
-  IntegerToken* lastIntToken = malloc(sizeof(IntegerToken));
-//******************************************** FOR MOCKING
-  testIntToken_1->type = TOKEN_INTEGER_TYPE;
-  testIntToken_1->value = 2;
-//******************************************** FOR MOCKING
-  testOprToken_1->type = TOKEN_OPERATOR_TYPE;
-  testOprToken_1->symbol = "+";
-  testOprToken_1->arity = INFIX;
-  testOprToken_1->bindingPower = ADD;
-  printf("test BindingPower: %d\n", testOprToken_1->bindingPower);
-//******************************************** FOR MOCKING
-  testIntToken_2->type = TOKEN_INTEGER_TYPE;
-  testIntToken_2->value = 3;
-//******************************************** FOR MOCKING
-  testOprToken_2->type = TOKEN_OPERATOR_TYPE;
-  testOprToken_2->symbol = "*";
-  testOprToken_2->arity = INFIX;
-  testOprToken_2->bindingPower = MUL;
-  printf("*test BindingPower: %d\n", testOprToken_2->bindingPower);
-//******************************************** FOR MOCKING
-  lastIntToken->type = TOKEN_INTEGER_TYPE;
-  lastIntToken->value = 4; 
-//******************************************** FOR MOCKING
-  lastOprToken->type = TOKEN_OPERATOR_TYPE;
-  lastOprToken->symbol = "$";
-  lastOprToken->arity = INFIX;
-  lastOprToken->bindingPower = EOT; 
+  IntegerToken* testIntToken_1 = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_1 = (OperatorToken*)createOperatorToken("+",INFIX);
+  IntegerToken* testIntToken_2 = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_2 = (OperatorToken*)createOperatorToken("*",INFIX);
+  IntegerToken* lastIntToken = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* lastOprToken = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
+//MOCK peepToken and getToken
+//In the first parser
   peepToken_ExpectAndReturn((Token*)testIntToken_1);
   getToken_ExpectAndReturn((Token*)testIntToken_1);
   peepToken_ExpectAndReturn((Token*)testOprToken_1);
   getToken_ExpectAndReturn((Token*)testOprToken_1);
+//Entered the second call of parser
   peepToken_ExpectAndReturn((Token*)testIntToken_2);
   getToken_ExpectAndReturn((Token*)testIntToken_2);
   peepToken_ExpectAndReturn((Token*)testOprToken_2);
   getToken_ExpectAndReturn((Token*)testOprToken_2);
+//Entered the third call of parser
   peepToken_ExpectAndReturn((Token*)lastIntToken);
   getToken_ExpectAndReturn((Token*)lastIntToken);
   peepToken_ExpectAndReturn((Token*)lastOprToken);  
