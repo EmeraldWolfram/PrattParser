@@ -13,6 +13,20 @@ void setUp(void){}
 
 void tearDown(void){}
 
+void bindingPowerStrongerThanPreviousToken(OperatorToken* testOprToken,IntegerToken* testIntToken){
+  peepToken_ExpectAndReturn((Token*)testIntToken);
+  getToken_ExpectAndReturn((Token*)testIntToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+  getToken_ExpectAndReturn((Token*)testOprToken);
+}
+
+void bindingPowerWeakerThanPreviousToken(OperatorToken* testOprToken,IntegerToken* testIntToken){
+  peepToken_ExpectAndReturn((Token*)testIntToken);
+  getToken_ExpectAndReturn((Token*)testIntToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+}
+  
 /**
  *
  *  Obtain tokens of 2 , + , 3
@@ -32,14 +46,9 @@ void test_parser_with_2_ADD_3_EOT(void){
   IntegerToken* lastIntToken = (IntegerToken*)createIntegerToken(3);
 
 //MOCK peepToken and getToken
-  peepToken_ExpectAndReturn((Token*)testIntToken);
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-  getToken_ExpectAndReturn((Token*)testOprToken);
-  peepToken_ExpectAndReturn((Token*)lastIntToken);
-  getToken_ExpectAndReturn((Token*)lastIntToken);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);  
-  peepToken_ExpectAndReturn((Token*)lastOprToken);    
+  bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);
+  bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);
+ 
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -76,20 +85,11 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
 
 //MOCK peepToken and getToken
 //In the first parser
-  peepToken_ExpectAndReturn((Token*)testIntToken_1);
-  getToken_ExpectAndReturn((Token*)testIntToken_1);
-  peepToken_ExpectAndReturn((Token*)testOprToken_1);
-  getToken_ExpectAndReturn((Token*)testOprToken_1);
+  bindingPowerStrongerThanPreviousToken(testOprToken_1, testIntToken_1);
 //Entered the second call of parser
-  peepToken_ExpectAndReturn((Token*)testIntToken_2);
-  getToken_ExpectAndReturn((Token*)testIntToken_2);
-  peepToken_ExpectAndReturn((Token*)testOprToken_2);
-  getToken_ExpectAndReturn((Token*)testOprToken_2);
+  bindingPowerStrongerThanPreviousToken(testOprToken_2, testIntToken_2);
 //Entered the third call of parser
-  peepToken_ExpectAndReturn((Token*)lastIntToken);
-  getToken_ExpectAndReturn((Token*)lastIntToken);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);  
-  peepToken_ExpectAndReturn((Token*)lastOprToken);    
+  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);    
   peepToken_ExpectAndReturn((Token*)lastOprToken);    
  
   Token* testToken = malloc(sizeof(Token*));
