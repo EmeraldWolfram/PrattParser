@@ -5,11 +5,11 @@
 #include "customAssertion.h"
 #include <stdlib.h>
 #include <stdio.h>
-OperatorToken* mul;
+OperatorToken* mul, * add;
 char* multiply = "*";
 char* addition = "+";
-IntegerToken* value_3;
-IntegerToken* value_4;
+char* subtract = "-";
+IntegerToken* value_3, * value_4;
 void setUp(void){}
 
 void tearDown(void){}
@@ -24,7 +24,6 @@ void bindingPowerStrongerThanPreviousToken(OperatorToken* testOprToken,IntegerTo
 void bindingPowerWeakerThanPreviousToken(OperatorToken* testOprToken,IntegerToken* testIntToken){
   peepToken_ExpectAndReturn((Token*)testIntToken);
   getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
   peepToken_ExpectAndReturn((Token*)testOprToken);
 }
   
@@ -49,7 +48,7 @@ void test_parser_with_2_ADD_3_EOT(void){
 //MOCK peepToken and getToken
   bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);
   bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);
- 
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -89,8 +88,9 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   bindingPowerStrongerThanPreviousToken(testOprToken_2, testIntToken_2);
 //Entered the third call of parser
   bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);    
-  peepToken_ExpectAndReturn((Token*)lastOprToken);    
- 
+  peepToken_ExpectAndReturn((Token*)lastOprToken);  
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST  
@@ -100,12 +100,60 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*",INFIX), (OperatorToken*)testToken);
   mul = (OperatorToken*)((OperatorToken*)testToken)->token[1];
   TEST_ASSERT_EQUAL_OPERATOR(multiply, createIntegerToken(3), createIntegerToken(4), mul);  
-
 }
 
+/**
+ *
+ *  Obtain tokens of 2 , + , 3 , * , 4 , - , 5
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *        (-)
+ *        / \
+ *      (+) (5)
+ *      / \
+ *    (2) (*)
+ *        / \
+ *      (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
 
+void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT(void){
+  IntegerToken* testIntToken_2 = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_ADD = (OperatorToken*)createOperatorToken("+",INFIX);
+  IntegerToken* testIntToken_3 = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_MUL = (OperatorToken*)createOperatorToken("*",INFIX);
+  IntegerToken* testIntToken_4 = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* testOprToken_SUB = (OperatorToken*)createOperatorToken("-",INFIX);
+  IntegerToken* lastIntToken_5 = (IntegerToken*)createIntegerToken(5);
+  OperatorToken* lastOprToken = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
-
+//MOCK peepToken and getToken
+//In the first parser
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);
+//Entered the second call of parser
+  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);
+//Entered the third call of parser
+  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
+  getToken_ExpectAndReturn((Token*)testOprToken_SUB);
+//Entered the third call of parser
+  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken_5);     
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST  
+  TEST_ASSERT_NOT_NULL(testToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
+  
+  add = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  mul = (OperatorToken*)add->token[1];
+  TEST_ASSERT_EQUAL_OPERATOR(subtract, createOperatorToken("+",INFIX), createIntegerToken(5), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*",INFIX), add);
+  TEST_ASSERT_EQUAL_OPERATOR(multiply, createIntegerToken(3), createIntegerToken(4), mul);  
+}
 
 
 
