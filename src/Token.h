@@ -9,6 +9,14 @@
 #define DIV 30
 #define EOT 0
 
+// Token *nud(){
+  // if
+    // return
+  // else
+    // return 
+// }
+
+
 typedef enum {
 	TOKEN_UNKNOWN_TYPE,
 	TOKEN_INTEGER_TYPE,
@@ -34,6 +42,8 @@ typedef struct {
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
+  // nud();
+  // led();
 } Token;
 
 typedef struct {

@@ -14,6 +14,8 @@ Token* parser(int prevBindingPower){
   
   do{
     nextToken = (Token*)peepToken();
+    // x = nextToken->nud(nextToken);
+    // x 
     if(nextToken->type == TOKEN_INTEGER_TYPE){
       nextIntToken = (IntegerToken*)getToken();
       nextOprToken = (OperatorToken*)peepToken();
