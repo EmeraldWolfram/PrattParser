@@ -56,7 +56,7 @@ void test_parser_with_2_ADD_3_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,((IntegerToken*)testToken)->type);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
   TEST_ASSERT_EQUAL_OPERATOR(addition,createIntegerToken(2),createIntegerToken(3),(OperatorToken*)testToken);
 }
