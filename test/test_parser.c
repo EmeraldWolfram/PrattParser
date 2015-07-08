@@ -15,18 +15,16 @@ void setUp(void){}
 
 void tearDown(void){}
 
-void bindingPowerStrongerThanPreviousToken(OperatorToken* testOprToken,IntegerToken* testIntToken){
-  peepToken_ExpectAndReturn((Token*)testIntToken);
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-  getToken_ExpectAndReturn((Token*)testOprToken);
-}
+#define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
+          getToken_ExpectAndReturn((Token*)testIntToken);                     \
+          peepToken_ExpectAndReturn((Token*)testOprToken);                    \
+          getToken_ExpectAndReturn((Token*)testOprToken);
 
-void bindingPowerWeakerThanPreviousToken(OperatorToken* testOprToken,IntegerToken* testIntToken){
-  peepToken_ExpectAndReturn((Token*)testIntToken);
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-}
+
+#define bindingPowerWeakerThanPreviousToken(testOprToken, testIntToken)       \
+          getToken_ExpectAndReturn((Token*)testIntToken);                     \
+          peepToken_ExpectAndReturn((Token*)testOprToken);                    \
+
   
 /**
  *
@@ -232,7 +230,56 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT(void){
   
 }
 
+/**
+ *
+ *  Obtain tokens of - , 3 , * , - , 4
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (+)
+ *      / \
+ *    (-) (-)
+ *    /   /
+ *  (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_minus_3_MUL_minus_4_EOT(void){
+  
+  OperatorToken* preOprToken0   = (OperatorToken*)createOperatorToken("-",PREFIX);
+  IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken   = (OperatorToken*)createOperatorToken("+",INFIX);
 
+  
+  OperatorToken* preOprToken1   = (OperatorToken*)createOperatorToken("-",PREFIX);
+  IntegerToken* lastIntToken    = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
+
+//MOCK peepToken and getToken
+  getToken_ExpectAndReturn((Token*)preOprToken0);
+  getToken_ExpectAndReturn((Token*)testIntToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);
+  getToken_ExpectAndReturn((Token*)testOprToken);
+  
+  getToken_ExpectAndReturn((Token*)preOprToken1);
+  getToken_ExpectAndReturn((Token*)lastIntToken);
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
+  
+  TEST_ASSERT_EQUAL_OPERATOR(addition, createOperatorToken("-",PREFIX), createOperatorToken("-",PREFIX), (OperatorToken*)testToken);
+  subtract = (OperatorToken*)((OperatorToken*)testToken)->token[0]; //Left Token
+  TEST_ASSERT_EQUAL(3, ((IntegerToken*)subtract->token[0])->value);
+  subtract = (OperatorToken*)((OperatorToken*)testToken)->token[1]; //Right Token
+  TEST_ASSERT_EQUAL(4, ((IntegerToken*)subtract->token[0])->value);
+}
 
 
 

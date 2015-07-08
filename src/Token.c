@@ -1,4 +1,5 @@
 #include "Token.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +44,15 @@
  *
  */
 
+Token* infixNud(Token* myself){
+  // myself = (Token*)getToken();
+  if(myself->type == TOKEN_OPERATOR_TYPE)
+    ((OperatorToken*)myself)->token[0] = parser(100);
+  return myself;
+}
+Token* infixLed(Token* myself){
+  return myself;
+}
 
 
 Token *createOperatorToken(char *symbol, Arity AR){

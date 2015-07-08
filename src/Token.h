@@ -38,13 +38,14 @@ typedef enum {
 	RIGHT_TO_LEFT,
 } Associativity;
 
-typedef struct {
+typedef struct Token_t Token;
+struct Token_t{
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
-  // nud();
-  // led();
-} Token;
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
+};
 
 typedef struct {
 	TokenType type;
@@ -75,10 +76,15 @@ typedef struct {
   int bindingPower;
 	Arity arity;
 	Token *token[0];
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
 } OperatorToken;
 
 Token *createOperatorToken(char *symbol, Arity AR);
 Token *createIntegerToken(int value);
+
+Token* infixNud(Token* myself);
+Token* infixLed(Token* myself);
 
 #endif // Token_H
 
