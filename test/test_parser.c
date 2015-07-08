@@ -227,7 +227,6 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT(void){
 
   multiply  = (OperatorToken*)add->token[1];                                  
   TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
-  
 }
 
 /**
@@ -281,6 +280,86 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
   TEST_ASSERT_EQUAL(4, ((IntegerToken*)subtract->token[0])->value);
 }
 
+/**
+ *
+ *  Obtain tokens of 2, +, 3, *, 4, -, 9, /, -, 9, +, 7
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *            (+)
+ *            / \
+ *          (-) (7)
+ *         /   \
+ *      (+)     (/)
+ *      / \     / \
+ *    (2) (*) (9) (-)
+ *        / \     /
+ *      (3) (4) (9)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+
+void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
+  printf("FROM HERE");
+  IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_ADD   = (OperatorToken*)createOperatorToken("+",INFIX);
+  
+  IntegerToken* testIntToken_3      = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_MUL   = (OperatorToken*)createOperatorToken("*",INFIX);
+  
+  IntegerToken* testIntToken_4      = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* testOprToken_SUB   = (OperatorToken*)createOperatorToken("-",INFIX);
+  
+  IntegerToken* testIntToken_9      = (IntegerToken*)createIntegerToken(9);
+  OperatorToken* testOprToken_DIV   = (OperatorToken*)createOperatorToken("/",INFIX);
+  
+  OperatorToken* preOprToken        = (OperatorToken*)createOperatorToken("-",PREFIX);
+  IntegerToken* testIntToken_n9      = (IntegerToken*)createIntegerToken(9);
+  OperatorToken* testOprToken_ADD2  = (OperatorToken*)createOperatorToken("+",INFIX);
+  
+  IntegerToken* testIntToken_7      = (IntegerToken*)createIntegerToken(7);
+  OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
+
+//MOCK peepToken and getToken
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);    //In parser(0), formed (2 + parser(20))
+  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);    //In parser(20), formed (3 * parser(30)) 
+  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);      //In parser(30)), RETURN to parser(20) and complete with (3 * 4)
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                        //RETURN to parser(0) and complete (2 + (3 * 4))
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                        //Check for END of TOKEN      FALSE and continue
+  
+  getToken_ExpectAndReturn((Token*)testOprToken_SUB);                         //In parser(0), formed ((2 + (3 * 4)) - parser(20))
+  bindingPowerStrongerThanPreviousToken(testOprToken_DIV, testIntToken_9);    //In parser(20), formed (9 / parser(30))
+  getToken_ExpectAndReturn((Token*)preOprToken);                              //In parser(30), formed (- parser(100))
+  bindingPowerWeakerThanPreviousToken(testOprToken_ADD2, testIntToken_n9);    //In parser(100), RETURN to parser(30) and complete with (-9)
+  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);                       //In parser(30), check if "+" could win "/"
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);                       //RETURN to parser(20) and complete (9 / (-9))
+  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);                       //RETURN to parser(0) and complete ((2 + (3 * 4)) - (9 / (-9)))
+
+  getToken_ExpectAndReturn((Token*)testOprToken_ADD2);                        //In parser(0), formed [((2 + (3 * 4)) - (9 / (-9))) + parser(20)]
+  bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_7);           //In parser(20), formed [((2 + (3 * 4)) - (9 / (-9))) + 7]
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                            //Check for END of TOKEN      TRUE and exit
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
+  TEST_ASSERT_EQUAL_OPERATOR(addition, createOperatorToken("-",INFIX), createIntegerToken(7), (OperatorToken*)testToken);
+
+  subtract  = (OperatorToken*)((OperatorToken*)testToken)->token[0];    
+  TEST_ASSERT_EQUAL_OPERATOR(subtraction, createOperatorToken("+",INFIX), createOperatorToken("/",INFIX), subtract);
+
+  divide    = (OperatorToken*)subtract->token[1];                         
+  add       = (OperatorToken*)subtract->token[0];                     
+  TEST_ASSERT_EQUAL_OPERATOR(division, createIntegerToken(9), createOperatorToken("-",PREFIX), divide);
+  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*", INFIX), add);
+  subtract  = (OperatorToken*)(divide->token[1]);
+  TEST_ASSERT_EQUAL(9, ((IntegerToken*)subtract->token[0])->value);
+  multiply  = (OperatorToken*)add->token[1];                                  
+  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
+}
 
 
 

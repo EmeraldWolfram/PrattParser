@@ -21,18 +21,20 @@ Token* parser(int prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
     nextOprToken->token[1] = parser(nextOprToken->bindingPower);
-    // printf("\nReturn to parser(%d)", prevBindingPower);
+    printf("\nReturn to parser(%d) with (%c)", prevBindingPower, *nextOprToken->symbol);
   }
   else
     return (Token*)nextIntToken;
   
   do{  
     currentToken = (OperatorToken*)peepToken();
+    printf("\n**current comparing with prev(%d)",prevBindingPower);
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
       currentToken->token[0] = (Token*)nextOprToken;
       currentToken->token[1] = parser(currentToken->bindingPower);
-      // printf("\n*Return to parser(%d)", prevBindingPower);
+      printf("\n*Return to parser(%d) with (%c)", prevBindingPower, *currentToken->symbol);
+      printf("\nleftToken is (%c)", *((OperatorToken*)currentToken->token[0])->symbol);
       nextOprToken = currentToken;
     }
   }while(strcmp(currentToken->symbol, "$") != 0 && prevBindingPower == 0);
