@@ -45,12 +45,18 @@
  */
 
 Token* infixNud(Token* myself){
-  // myself = (Token*)getToken();
-  if(myself->type == TOKEN_OPERATOR_TYPE)
-    ((OperatorToken*)myself)->token[0] = parser(100);
+  char* symbol = ((OperatorToken*)myself)->symbol;
+  if(myself->type == TOKEN_OPERATOR_TYPE){
+    if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
+      ((OperatorToken*)myself)->token[0] = parser(100);
+    else
+      printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
+  }
   return myself;
 }
 Token* infixLed(Token* myself){
+  if(myself->type != TOKEN_OPERATOR_TYPE)
+    printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
   return myself;
 }
 
