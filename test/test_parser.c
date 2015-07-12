@@ -300,7 +300,7 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
  */
 
 void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
-  printf("FROM HERE");
+  printf("\nFROM HERE\n");
   IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken_ADD   = (OperatorToken*)createOperatorToken("+",INFIX);
   

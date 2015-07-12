@@ -12,29 +12,27 @@ Token* parser(int prevBindingPower){
   Token* nextToken = malloc(sizeof(Token));
   
   nextToken = getToken();
-  nextIntToken = (IntegerToken*)infixNud(nextToken);
+  printf("Print nextToken as 0x%X\t 0x%X\n", nextToken, infixNud);
+  nextToken->nud = infixNud;
+  nextIntToken = (IntegerToken*)nextToken->nud(nextToken);
   nextToken = peepToken();
-  nextOprToken = (OperatorToken*)infixLed(nextToken);
-  printf("In parser(%d)\n", prevBindingPower);
+  nextToken->led = infixLed;
+  nextOprToken = (OperatorToken*)nextToken->led(nextToken);
   
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
     nextOprToken->token[1] = parser(nextOprToken->bindingPower);
-    printf("\nReturn to parser(%d) with (%c)", prevBindingPower, *nextOprToken->symbol);
   }
   else
     return (Token*)nextIntToken;
   
   do{  
     currentToken = (OperatorToken*)peepToken();
-    printf("\n**current comparing with prev(%d)",prevBindingPower);
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
       currentToken->token[0] = (Token*)nextOprToken;
       currentToken->token[1] = parser(currentToken->bindingPower);
-      printf("\n*Return to parser(%d) with (%c)", prevBindingPower, *currentToken->symbol);
-      printf("\nleftToken is (%c)", *((OperatorToken*)currentToken->token[0])->symbol);
       nextOprToken = currentToken;
     }
   }while(strcmp(currentToken->symbol, "$") != 0 && prevBindingPower == 0);

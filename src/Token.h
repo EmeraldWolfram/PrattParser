@@ -51,6 +51,8 @@ typedef struct {
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
 	int value;
 } IntegerToken;
 
@@ -58,6 +60,8 @@ typedef struct {
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
 	double value;
 } FloatToken;
 
@@ -65,6 +69,8 @@ typedef struct {
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
 	char *name;
 } IdentifierToken, StringToken;
 
@@ -72,12 +78,12 @@ typedef struct {
 	TokenType type;
   uint32_t startColumn;
   uint32_t length;
+  Token* (*nud)(Token*);
+  Token* (*led)(Token*);
 	char *symbol;
   int bindingPower;
 	Arity arity;
 	Token *token[0];
-  Token* (*nud)(Token*);
-  Token* (*led)(Token*);
 } OperatorToken;
 
 Token *createOperatorToken(char *symbol, Arity AR);
