@@ -11,13 +11,13 @@ Token* parser(int prevBindingPower){
   OperatorToken* currentToken = malloc(sizeof(OperatorToken));
   Token* nextToken = malloc(sizeof(Token));
   
-  nextToken = getToken();
-  printf("Print nextToken as 0x%X\t 0x%X\n", nextToken, infixNud);
-  nextToken->nud = infixNud;
-  nextIntToken = (IntegerToken*)nextToken->nud(nextToken);
-  nextToken = peepToken();
-  nextToken->led = infixLed;
-  nextOprToken = (OperatorToken*)nextToken->led(nextToken);
+  nextToken       = getToken();
+  nextToken->nud  = infixNud;
+  nextIntToken    = (IntegerToken*)nextToken->nud(nextToken);
+  
+  nextToken       = peepToken();
+  nextToken->led  = infixLed;
+  nextOprToken    = (OperatorToken*)nextToken->led(nextToken);
   
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();

@@ -5,15 +5,12 @@
 #include "customAssertion.h"
 #include <stdlib.h>
 #include <stdio.h>
-OperatorToken *multiply, *add, *subtract, *divide;
-char *multiplication = "*";
-char *addition = "+";
-char *subtraction = "-";
-char *division = "/";
-IntegerToken* value_3, * value_4;
-void setUp(void){}
 
-void tearDown(void){}
+OperatorToken *multiply, *add, *subtract, *divide;
+char *multiplication  = "*";
+char *addition        = "+";
+char *subtraction     = "-";
+char *division        = "/";
 
 #define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
@@ -23,8 +20,11 @@ void tearDown(void){}
 
 #define bindingPowerWeakerThanPreviousToken(testOprToken, testIntToken)       \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
-          peepToken_ExpectAndReturn((Token*)testOprToken);                    \
+          peepToken_ExpectAndReturn((Token*)testOprToken);                    
 
+void setUp(void){}
+
+void tearDown(void){}
   
 /**
  *
@@ -46,9 +46,9 @@ void test_parser_with_2_ADD_3_EOT(void){
   OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //Entered first call of parser
-  bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);      //Entered second call of parser
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //In parser(0), formed (2 + parser(20))
+  bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);      //In parser(20), RETURN to parser(0) and completed (2 + 3)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT (End of Token) and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -84,12 +84,12 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   OperatorToken* lastOprToken     = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  bindingPowerStrongerThanPreviousToken(testOprToken_1, testIntToken_1);    //In the first parser
-  bindingPowerStrongerThanPreviousToken(testOprToken_2, testIntToken_2);    //Entered the second call of parser
-  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);           //Entered the third call of parser
-
-  peepToken_ExpectAndReturn((Token*)lastOprToken);  
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  bindingPowerStrongerThanPreviousToken(testOprToken_1, testIntToken_1);    //In parser(0), formed (2 + parser(20))
+  bindingPowerStrongerThanPreviousToken(testOprToken_2, testIntToken_2);    //In parser(20), formed (3 * parser(30))
+  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);           //In parser(30), RETURN to parser(20) and completed (2 + (3 * 4))
+  
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(20), peep '$' to check for EOT and RETURN to parser(0)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -133,14 +133,16 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT(void){
   OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);  //In the first parser
-  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);  //Entered the second call of parser
-  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);    //Entered the third call of parser
-  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
-  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
-  getToken_ExpectAndReturn((Token*)testOprToken_SUB);
-  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken_5);         //Entered the fourth call of parser
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);  //In parser(0), formed (2 + parser(20))
+  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);  //In parser(20), formed (3 * parser(30))
+  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);    //In parser(30), RETURN to parser(20) and complete (2 + (3 * 4))
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                      //In parser(20), peep '-' to check for EOT and RETURN to parser(0)
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                      //In parser(0), peep '-' to check for EOT 
+  getToken_ExpectAndReturn((Token*)testOprToken_SUB);                       //In parser(0), formed [(2 + (3 * 4)) - parser(20)]
+  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken_5);         //In parser(20), RETURN to parser(0) and completed [(2 + (3 * 4)) - 5]
+  
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), check for EOT and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -194,21 +196,22 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT(void){
   OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);    //In the first parser
-  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);    //Entered the second call of parser
-  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);      //Entered the third call of parser
-  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
-  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);
-  getToken_ExpectAndReturn((Token*)testOprToken_SUB);
-
-  bindingPowerStrongerThanPreviousToken(testOprToken_DIV, testIntToken_5);    //Entered the fourth call of parser
-  bindingPowerWeakerThanPreviousToken(testOprToken_ADD2, testIntToken_6);     //Entered the fifth call of parser
-  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);
-  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);
-
-  getToken_ExpectAndReturn((Token*)testOprToken_ADD2);                        //Entered the sixth call of parser
-  bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_7);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);    //In parser(0), formed (2 + parser(20))
+  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);    //In parser(20), formed (3 * parser(30))
+  bindingPowerWeakerThanPreviousToken(testOprToken_SUB, testIntToken_4);      //In parser(30), RETURN to parser(20) and complete (2 + (3 * 4))
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                        //In parser(20), peep '-' to check for EOT and RETURN TO parser(0)
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                        //In parser(0), peep '-' to check for EOT
+  getToken_ExpectAndReturn((Token*)testOprToken_SUB);                         //In parser(0), formed [(2 + (3 * 4)) - parser(20)] 
+  bindingPowerStrongerThanPreviousToken(testOprToken_DIV, testIntToken_5);    //In parser(20), formed (5 / parser(30))
+  bindingPowerWeakerThanPreviousToken(testOprToken_ADD2, testIntToken_6);     //In parser(30), RETURN to parser(20) and complete [(2 + (3 * 4)) - (5 / 6)]
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);                       //In parser(20), peep '+' to check for EOT and return to parser(0)
+  peepToken_ExpectAndReturn((Token*)testOprToken_ADD2);                       //In parser(0), peep '+' to check for EOT 
+  getToken_ExpectAndReturn((Token*)testOprToken_ADD2);                        //In parser(0), formed {[(2 + (3 * 4)) - (5 / 6)] + parser(20)}
+  bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_7);           //In parser(20), RETURN to parser(0) and complete {[(2 + (3 * 4)) - (5 / 6)] + 7}
+  
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                            //In parser(0), peep '$' to check EOT and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -255,17 +258,18 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
   OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  getToken_ExpectAndReturn((Token*)preOprToken0);
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-  getToken_ExpectAndReturn((Token*)testOprToken);
+  getToken_ExpectAndReturn((Token*)preOprToken0);         //In parser(0), formed (- parser(100))
+  getToken_ExpectAndReturn((Token*)testIntToken);         //In parser(100), get 3
+  peepToken_ExpectAndReturn((Token*)testOprToken);        //In parser(100), peep '+' to check binding power, RETURN to parser(0) and complete (-3)
   
-  getToken_ExpectAndReturn((Token*)preOprToken1);
-  getToken_ExpectAndReturn((Token*)lastIntToken);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);
+  peepToken_ExpectAndReturn((Token*)testOprToken);        //In parser(0), peep '+' to check binding power
+  getToken_ExpectAndReturn((Token*)testOprToken);         //In parser(0), formed ((-3) + parser(20)))
+  
+  getToken_ExpectAndReturn((Token*)preOprToken1);         //In parser(20), formed (- parser(100))
+  getToken_ExpectAndReturn((Token*)lastIntToken);         //In parser(100), get 4
+  peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(100), peep '$' to check binding power, RETURN to parser(20) and complete [(-3) + (-4)]
+  peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(20), peep '$' to check EOT and RETURN to parser(0)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(0), peep '$' to check EOT and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -300,7 +304,6 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
  */
 
 void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
-  printf("\nFROM HERE\n");
   IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken_ADD   = (OperatorToken*)createOperatorToken("+",INFIX);
   
@@ -339,7 +342,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
 
   getToken_ExpectAndReturn((Token*)testOprToken_ADD2);                        //In parser(0), formed [((2 + (3 * 4)) - (9 / (-9))) + parser(20)]
   bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_7);           //In parser(20), formed [((2 + (3 * 4)) - (9 / (-9))) + 7]
-  peepToken_ExpectAndReturn((Token*)lastOprToken);                            //Check for END of TOKEN      TRUE and exit
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                            //Check for END of TOKEN and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
@@ -355,8 +358,10 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
   add       = (OperatorToken*)subtract->token[0];                     
   TEST_ASSERT_EQUAL_OPERATOR(division, createIntegerToken(9), createOperatorToken("-",PREFIX), divide);
   TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*", INFIX), add);
+  
   subtract  = (OperatorToken*)(divide->token[1]);
   TEST_ASSERT_EQUAL(9, ((IntegerToken*)subtract->token[0])->value);
+  
   multiply  = (OperatorToken*)add->token[1];                                  
   TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
 }

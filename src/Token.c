@@ -71,26 +71,26 @@ Token *createOperatorToken(char *symbol, Arity AR){
   OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * i);
   
   if(*symbol == '+')
-    op->bindingPower = ADD;
+    op->bindingPower  = ADD;
   else if(*symbol == '*')
-    op->bindingPower = MUL;
+    op->bindingPower  = MUL;
   else if(*symbol == '/')
-    op->bindingPower = DIV;
+    op->bindingPower  = DIV;
   else if(*symbol == '-')
-    op->bindingPower = SUB;
+    op->bindingPower  = SUB;
   else
-    op->bindingPower = 0;
+    op->bindingPower  = 0;
   
-  op->type = TOKEN_OPERATOR_TYPE;
-  op->symbol = symbol;
-  op->arity = AR;
+  op->type    = TOKEN_OPERATOR_TYPE;
+  op->symbol  = symbol;
+  op->arity   = AR;
 
   return (Token*)op;
 }
 
 Token *createIntegerToken(int value){
   IntegerToken* intTk = malloc(sizeof(IntegerToken));
-    intTk->type = TOKEN_INTEGER_TYPE;
-    intTk->value = value;
+    intTk->type   = TOKEN_INTEGER_TYPE;
+    intTk->value  = value;
   return (Token*)intTk;  
 }
