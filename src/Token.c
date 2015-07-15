@@ -57,6 +57,7 @@ Token* infixNud(Token* myself){
 Token* infixLed(Token* myself){
   if(myself->type != TOKEN_OPERATOR_TYPE)
     printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
+    
   return myself;
 }
 
