@@ -49,7 +49,7 @@
 Token* infixNud(Token* myself){
   char* symbol = ((OperatorToken*)myself)->symbol;
   if(myself->type == TOKEN_OPERATOR_TYPE){
-    if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
+    if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0 || strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
       ((OperatorToken*)myself)->token[0] = parser(100);
     else
       ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
@@ -75,14 +75,12 @@ Token *createOperatorToken(char *symbol, Arity AR){
   
   OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * i);
   
-  if(*symbol == '+')
-    op->bindingPower  = ADD;
-  else if(*symbol == '*')
-    op->bindingPower  = MUL;
-  else if(*symbol == '/')
-    op->bindingPower  = DIV;
-  else if(*symbol == '-')
-    op->bindingPower  = SUB;
+  if(strcmp(symbol,"+") == 0 || strcmp(symbol,"-") == 0)
+    op->bindingPower  = 20;
+  else if(strcmp(symbol,"*") == 0 || strcmp(symbol,"/") == 0)
+    op->bindingPower  = 30;
+  else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
+    op->bindingPower  = 60;
   else
     op->bindingPower  = 0;
   
