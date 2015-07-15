@@ -12,6 +12,9 @@ char *multiplication  = "*";
 char *addition        = "+";
 char *subtraction     = "-";
 char *division        = "/";
+char *increment       = "++";
+char *decrement       = "--";
+
 
 #define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
@@ -367,6 +370,90 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
   TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
 }
 
+
+/**
+ *
+ *  Obtain tokens of 2 , ++
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (++)
+ *      /
+ *    (2)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_INCREMENT_EOT(void){
+  IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken   = (OperatorToken*)createOperatorToken("++", POSTFIX);
+  OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$", POSTFIX);
+
+//MOCK peepToken and getToken
+  bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //In parser(0), formed (2 ++)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
+  
+  TEST_ASSERT_EQUAL(increment,((OperatorToken*)testToken)->symbol);
+  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+}
+
+/**
+ *
+ *  Obtain tokens of ++ , 2 , * , 6 , -- , - , 8
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *
+ *             (-)
+ *            /  \
+ *          (*)  (8)
+ *         /  \
+ *      (++)  (--)
+ *      /     /
+ *    (2)   (6)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_with_Answer_of_DECR_6_then_SUB_8(void){
+  OperatorToken* PreOprToken    = (OperatorToken*)createOperatorToken("++", PREFIX);
+  IntegerToken* testIntToken_2  = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_MUL   = (OperatorToken*)createOperatorToken("*", INFIX);
+
+  IntegerToken* testIntToken_6  = (IntegerToken*)createIntegerToken(6);
+  OperatorToken* PosOprToken    = (OperatorToken*)createOperatorToken("--", POSTFIX);
+  OperatorToken* testOprToken_SUB   = (OperatorToken*)createOperatorToken("-", INFIX);
+  
+  IntegerToken* testIntToken_8  = (IntegerToken*)createIntegerToken(8);
+  OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$", POSTFIX);
+
+//MOCK peepToken and getToken
+  getToken_ExpectAndReturn((Token*)PreOprToken);                        //In parser(0), formed (++ parser(100))
+  getToken_ExpectAndReturn((Token*)testIntToken_2);                     //In parser(100), formed (++2)
+  peepToken_ExpectAndReturn((Token*)testOprToken_MUL);                  //In parser(100), peep '*' to compare bindingPower and RETURN to parser(0)
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_MUL);                  //In parser(0), peep '*' to compare bindingPower
+  getToken_ExpectAndReturn((Token*)testOprToken_MUL);                   //In parser(0), formed ((++2) * parser(30))
+  bindingPowerStrongerThanPreviousToken(PosOprToken, testIntToken_6);   //In parser(30), formed (--6)
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                  //In parser(30), RETURN to parser(30) and completed ((++2) * (--6))
+  peepToken_ExpectAndReturn((Token*)testOprToken_SUB);                  //In parser(0), peep '-' to check for EOT
+  getToken_ExpectAndReturn((Token*)testOprToken_SUB);                   //In parser(0), formed [((++2) * (--6)) - parser(20)]
+  bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_8);     //In parser(20), RETURN to parser(0) and completed [((++2) * (--6)) - 8]
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
+  
+//  TEST_ASSERT_EQUAL(increment,((OperatorToken*)testToken)->symbol);
+//  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+}
 
 
 

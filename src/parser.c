@@ -23,7 +23,8 @@ Token* parser(int prevBindingPower){
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
-    nextOprToken->token[1] = parser(nextOprToken->bindingPower);
+    if(nextOprToken->arity != POSTFIX)
+      nextOprToken->token[1] = parser(nextOprToken->bindingPower);
   }
   else
     return (Token*)nextIntToken;
