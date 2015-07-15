@@ -18,7 +18,7 @@ void extendMultiCharacterOperator(){
 
 
 Token* infixNud(Token* myself){
-  char* symbol = ((OperatorToken*)myself)->symbol;
+  // char* symbol = ((OperatorToken*)myself)->symbol;
   // if(myself->type == TOKEN_OPERATOR_TYPE){
     // if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
       // ((OperatorToken*)myself)->token[0] = parser(100);

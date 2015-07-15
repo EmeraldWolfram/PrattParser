@@ -1,5 +1,7 @@
 #include "Token.h"
 #include "parser.h"
+#include "ErrorObject.h"
+#include "CException.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,12 +52,14 @@ Token* infixNud(Token* myself){
     if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
       ((OperatorToken*)myself)->token[0] = parser(100);
     else
-      printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
+      ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
+      // printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
   }
   return myself;
 }
 Token* infixLed(Token* myself){
   if(myself->type != TOKEN_OPERATOR_TYPE)
+    //ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
     printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
     
   return myself;

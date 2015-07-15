@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "Token.h"
 #include "mock_getToken.h"
+#include "ErrorObject.h"
 #include "customAssertion.h"
 #include <stdlib.h>
 #include <stdio.h>

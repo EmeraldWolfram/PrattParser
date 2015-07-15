@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "mock_getToken.h"
 #include "Token.h"
+#include "mock_ErrorObject.h"
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
