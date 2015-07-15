@@ -39,6 +39,7 @@
   :test:
     - *common_defines
     - TEST=
+    - CEXECPTION_USE_CONFIG_FILE
   :test_preprocess:
     - *common_defines
     - TEST=

@@ -47,22 +47,29 @@
  */
 
 Token* infixNud(Token* myself){
-  char* symbol = ((OperatorToken*)myself)->symbol;
-  if(myself->type == TOKEN_OPERATOR_TYPE){
-    if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
-      ((OperatorToken*)myself)->token[0] = parser(100);
-    else
-      ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
-      // printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
+  ErrorObject *err;
+  Try{
+    char* symbol = ((OperatorToken*)myself)->symbol;
+    if(myself->type == TOKEN_OPERATOR_TYPE){
+      if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
+        ((OperatorToken*)myself)->token[0] = parser(100);
+      else
+        ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
+    }
+    return myself;
+  }Catch(err) {
+    printf("%c/n", err->errorMsg);
   }
-  return myself;
 }
 Token* infixLed(Token* myself){
-  if(myself->type != TOKEN_OPERATOR_TYPE)
-    //ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
-    printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
-    
-  return myself;
+  ErrorObject *err;
+  Try{  
+    if(myself->type != TOKEN_OPERATOR_TYPE)
+      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    return myself;
+  }Catch(err) {
+    printf("%c/n", err->errorMsg);
+  }
 }
 
 
