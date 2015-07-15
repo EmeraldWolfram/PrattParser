@@ -1,4 +1,5 @@
 #include "Token.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +44,21 @@
  *
  */
 
+Token* infixNud(Token* myself){
+  char* symbol = ((OperatorToken*)myself)->symbol;
+  if(myself->type == TOKEN_OPERATOR_TYPE){
+    if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
+      ((OperatorToken*)myself)->token[0] = parser(100);
+    else
+      printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
+  }
+  return myself;
+}
+Token* infixLed(Token* myself){
+  if(myself->type != TOKEN_OPERATOR_TYPE)
+    printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
+  return myself;
+}
 
 
 Token *createOperatorToken(char *symbol, Arity AR){
@@ -55,26 +71,26 @@ Token *createOperatorToken(char *symbol, Arity AR){
   OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * i);
   
   if(*symbol == '+')
-    op->bindingPower = ADD;
+    op->bindingPower  = ADD;
   else if(*symbol == '*')
-    op->bindingPower = MUL;
+    op->bindingPower  = MUL;
   else if(*symbol == '/')
-    op->bindingPower = DIV;
+    op->bindingPower  = DIV;
   else if(*symbol == '-')
-    op->bindingPower = SUB;
+    op->bindingPower  = SUB;
   else
-    op->bindingPower = 0;
+    op->bindingPower  = 0;
   
-  op->type = TOKEN_OPERATOR_TYPE;
-  op->symbol = symbol;
-  op->arity = AR;
+  op->type    = TOKEN_OPERATOR_TYPE;
+  op->symbol  = symbol;
+  op->arity   = AR;
 
   return (Token*)op;
 }
 
 Token *createIntegerToken(int value){
   IntegerToken* intTk = malloc(sizeof(IntegerToken));
-    intTk->type = TOKEN_INTEGER_TYPE;
-    intTk->value = value;
+    intTk->type   = TOKEN_INTEGER_TYPE;
+    intTk->value  = value;
   return (Token*)intTk;  
 }
