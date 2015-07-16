@@ -15,7 +15,6 @@ char *division        = "/";
 char *increment       = "++";
 char *decrement       = "--";
 
-
 #define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
           peepToken_ExpectAndReturn((Token*)testOprToken);                    \
@@ -35,6 +34,7 @@ void tearDown(void){}
  *  Obtain tokens of 2 , + , 3
  *
  *  The parser should linked up and form a token tree as follow
+ *  This test check whether '+' can link 2 and 3 together
  *
  *      (+)
  *      / \
@@ -68,6 +68,8 @@ void test_parser_with_2_ADD_3_EOT(void){
  *  Obtain tokens of 2 , + , 3 , * , 4
  *
  *  The parser should linked up and form a token tree as follow
+ *  This test check if '+' can link to another OperatorToken ('*' in this case)
+ *
  *
  *      (+)
  *      / \
@@ -110,15 +112,16 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
  *
  *  Obtain tokens of 2 , + , 3 , * , 4 , - , 5
  *
+ *  This test check whether parser function can link a Token Tree itself to a lower binding power operator. 
  *  The parser should linked up and form a token tree as follow
  *
- *        (-)
- *        / \
- *      (+) (5)
- *      / \
- *    (2) (*)
- *        / \
- *      (3) (4)
+ *    (+)               (-)
+ *    / \      -->      / \
+ *  (2) (*)    -->    (+) (5)
+ *      / \    -->    / \
+ *    (3) (4)       (2) (*)
+ *                      / \
+ *                    (3) (4)
  *
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
@@ -165,6 +168,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT(void){
  *
  *  Obtain tokens of 2, +, 3, *, 4, -, 5, /, 6, +, 7
  *
+ *  This test check whether it can link a 2 token tree to a lower binding power operator without breaking
  *  The parser should linked up and form a token tree as follow
  *
  *            (+)
@@ -239,7 +243,8 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT(void){
 /**
  *
  *  Obtain tokens of - , 3 , * , - , 4
- *
+ *  
+ *  This test check whether parser() function can handle prefix (negative in this case)
  *  The parser should linked up and form a token tree as follow
  *
  *      (+)
@@ -292,6 +297,7 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
  *
  *  Obtain tokens of 2, +, 3, *, 4, -, 9, /, -, 9, +, 7
  *
+ *  This test check whether it can check negative and link 2 token tree at the same time
  *  The parser should linked up and form a token tree as follow
  *
  *            (+)
@@ -375,6 +381,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
  *
  *  Obtain tokens of 2 , ++
  *
+ *  This test check whether parser() function can handle postfix
  *  The parser should linked up and form a token tree as follow
  *
  *      (++)
@@ -405,6 +412,9 @@ void test_parser_with_2_INCREMENT_EOT(void){
 /**
  *
  *  Obtain tokens of ++ , 2 , * , 6 , -- , - , 8
+ *  This test check parser() can differentiate between PREFIX, INFIX and POSTFIX as the '++' in this test
+ *  is a PREFIX while the '--' should be a POSTFIX. All the given operator are assigned to INFIX here.
+ *  
  *
  *  The parser should linked up and form a token tree as follow
  *
@@ -420,12 +430,13 @@ void test_parser_with_2_INCREMENT_EOT(void){
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
 void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_with_Answer_of_DECR_6_then_SUB_8(void){
-  OperatorToken* PreOprToken    = (OperatorToken*)createOperatorToken("++", PREFIX);
+  printf("START HERE\n");
+  OperatorToken* PreOprToken    = (OperatorToken*)createOperatorToken("++", INFIX);
   IntegerToken* testIntToken_2  = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken_MUL   = (OperatorToken*)createOperatorToken("*", INFIX);
 
   IntegerToken* testIntToken_6  = (IntegerToken*)createIntegerToken(6);
-  OperatorToken* PosOprToken    = (OperatorToken*)createOperatorToken("--", POSTFIX);
+  OperatorToken* PosOprToken    = (OperatorToken*)createOperatorToken("--", INFIX);
   OperatorToken* testOprToken_SUB   = (OperatorToken*)createOperatorToken("-", INFIX);
   
   IntegerToken* testIntToken_8  = (IntegerToken*)createIntegerToken(8);
@@ -451,8 +462,11 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
   TEST_ASSERT_NOT_NULL(testToken);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-//  TEST_ASSERT_EQUAL(increment,((OperatorToken*)testToken)->symbol);
-//  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+  TEST_ASSERT_EQUAL_OPERATOR(subtraction,createOperatorToken("*",INFIX),createIntegerToken(8), (OperatorToken*)testToken);
+  multiply = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createOperatorToken("++",PREFIX),createOperatorToken("--",POSTFIX), multiply);
+  TEST_ASSERT_EQUAL(increment, ((OperatorToken*)multiply->token[0])->symbol);
+  TEST_ASSERT_EQUAL(decrement, ((OperatorToken*)multiply->token[1])->symbol);
 }
 
 
