@@ -19,7 +19,6 @@ Token* parser(int prevBindingPower){
   nextToken       = peepToken();
   nextToken->led  = infixLed;
   nextOprToken    = (OperatorToken*)nextToken->led(nextToken);
-  printf("Arity of this %s is %d\n", nextOprToken->symbol, nextOprToken->arity);
   
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();

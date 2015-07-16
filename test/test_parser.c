@@ -8,12 +8,6 @@
 #include <stdio.h>
 
 OperatorToken *multiply, *add, *subtract, *divide;
-char *multiplication  = "*";
-char *addition        = "+";
-char *subtraction     = "-";
-char *division        = "/";
-char *increment       = "++";
-char *decrement       = "--";
 
 #define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
@@ -58,9 +52,7 @@ void test_parser_with_2_ADD_3_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
-  
-  TEST_ASSERT_EQUAL_OPERATOR(addition,createIntegerToken(2),createIntegerToken(3),(OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX),createIntegerToken(2),createIntegerToken(3),(OperatorToken*)testToken);
 }
 
 /**
@@ -101,11 +93,10 @@ void test_parser_with_2_ADD_3_MUL_4_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*",INFIX), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createOperatorToken("*",INFIX), (OperatorToken*)testToken);
   multiply = (OperatorToken*)((OperatorToken*)testToken)->token[1];
-  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);  
 }
 
 /**
@@ -155,13 +146,12 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
   add = (OperatorToken*)((OperatorToken*)testToken)->token[0];
   multiply = (OperatorToken*)add->token[1];
-  TEST_ASSERT_EQUAL_OPERATOR(subtraction, createOperatorToken("+",INFIX), createIntegerToken(5), (OperatorToken*)testToken);
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*",INFIX), add);
-  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createIntegerToken(5), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createOperatorToken("*",INFIX), add);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);  
 }
 
 /**
@@ -225,19 +215,18 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createOperatorToken("-",INFIX), createIntegerToken(7), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createOperatorToken("-",INFIX), createIntegerToken(7), (OperatorToken*)testToken);
 
   subtract  = (OperatorToken*)((OperatorToken*)testToken)->token[0];    
-  TEST_ASSERT_EQUAL_OPERATOR(subtraction, createOperatorToken("+",INFIX), createOperatorToken("/",INFIX), subtract);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createOperatorToken("/",INFIX), subtract);
 
   divide    = (OperatorToken*)subtract->token[1];                         
   add       = (OperatorToken*)subtract->token[0];                     
-  TEST_ASSERT_EQUAL_OPERATOR(division, createIntegerToken(5), createIntegerToken(6), divide);
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*", INFIX), add);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("/",INFIX), createIntegerToken(5), createIntegerToken(6), divide);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createOperatorToken("*", INFIX), add);
 
   multiply  = (OperatorToken*)add->token[1];                                  
-  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);
 }
 
 /**
@@ -284,9 +273,8 @@ void test_parser_with_minus_3_MUL_minus_4_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createOperatorToken("-",PREFIX), createOperatorToken("-",PREFIX), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createOperatorToken("-",PREFIX), createOperatorToken("-",PREFIX), (OperatorToken*)testToken);
   subtract = (OperatorToken*)((OperatorToken*)testToken)->token[0]; //Left Token
   TEST_ASSERT_EQUAL(3, ((IntegerToken*)subtract->token[0])->value);
   subtract = (OperatorToken*)((OperatorToken*)testToken)->token[1]; //Right Token
@@ -358,24 +346,22 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_9_DIV_minus_9_ADD_7_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createOperatorToken("-",INFIX), createIntegerToken(7), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createOperatorToken("-",INFIX), createIntegerToken(7), (OperatorToken*)testToken);
 
   subtract  = (OperatorToken*)((OperatorToken*)testToken)->token[0];    
-  TEST_ASSERT_EQUAL_OPERATOR(subtraction, createOperatorToken("+",INFIX), createOperatorToken("/",INFIX), subtract);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createOperatorToken("/",INFIX), subtract);
 
   divide    = (OperatorToken*)subtract->token[1];                         
   add       = (OperatorToken*)subtract->token[0];                     
-  TEST_ASSERT_EQUAL_OPERATOR(division, createIntegerToken(9), createOperatorToken("-",PREFIX), divide);
-  TEST_ASSERT_EQUAL_OPERATOR(addition, createIntegerToken(2), createOperatorToken("*", INFIX), add);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("/",INFIX), createIntegerToken(9), createOperatorToken("-",PREFIX), divide);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createOperatorToken("*", INFIX), add);
   
   subtract  = (OperatorToken*)(divide->token[1]);
   TEST_ASSERT_EQUAL(9, ((IntegerToken*)subtract->token[0])->value);
   
   multiply  = (OperatorToken*)add->token[1];                                  
-  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createIntegerToken(3), createIntegerToken(4), multiply);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);
 }
-
 
 /**
  *
@@ -403,9 +389,8 @@ void test_parser_with_2_INCREMENT_EOT(void){
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-  TEST_ASSERT_EQUAL(increment,((OperatorToken*)testToken)->symbol);
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("++",POSTFIX),((OperatorToken*)testToken));
   TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
 }
 
@@ -430,7 +415,6 @@ void test_parser_with_2_INCREMENT_EOT(void){
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
 void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_with_Answer_of_DECR_6_then_SUB_8(void){
-  printf("START HERE\n");
   OperatorToken* PreOprToken    = (OperatorToken*)createOperatorToken("++", INFIX);
   IntegerToken* testIntToken_2  = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken_MUL   = (OperatorToken*)createOperatorToken("*", INFIX);
@@ -460,13 +444,14 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,testToken->type);
   
-  TEST_ASSERT_EQUAL_OPERATOR(subtraction,createOperatorToken("*",INFIX),createIntegerToken(8), (OperatorToken*)testToken);
   multiply = (OperatorToken*)((OperatorToken*)testToken)->token[0];
-  TEST_ASSERT_EQUAL_OPERATOR(multiplication, createOperatorToken("++",PREFIX),createOperatorToken("--",POSTFIX), multiply);
-  TEST_ASSERT_EQUAL(increment, ((OperatorToken*)multiply->token[0])->symbol);
-  TEST_ASSERT_EQUAL(decrement, ((OperatorToken*)multiply->token[1])->symbol);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("*",INFIX), createIntegerToken(8), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("++",PREFIX), createOperatorToken("--",POSTFIX), multiply);
+  OperatorToken* token_INCR = ((OperatorToken*)multiply->token[0]);
+  OperatorToken* token_DECR = ((OperatorToken*)multiply->token[1]);
+  TEST_ASSERT_EQUAL(2, ((IntegerToken*)token_INCR->token[0])->value);
+  TEST_ASSERT_EQUAL(6, ((IntegerToken*)token_DECR->token[0])->value);
 }
 
 

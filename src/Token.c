@@ -71,10 +71,9 @@ Token* infixLed(Token* myself){
   Try{  
     if(myself->type != TOKEN_OPERATOR_TYPE)
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
-    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0){
+    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
       ((OperatorToken*)myself)->arity = POSTFIX;
-      printf("Arity of %s changed to %d!\n", ((OperatorToken*)myself)->symbol, ((OperatorToken*)myself)->arity);
-    }
+    
     return myself;
   }Catch(err) {
     printf("%c/n", err->errorMsg);
