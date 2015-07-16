@@ -65,9 +65,12 @@ Token* infixNud(Token* myself){
 
 Token* infixLed(Token* myself){
   ErrorObject *err;
+  char* symbol = ((OperatorToken*)myself)->symbol;
   Try{  
     if(myself->type != TOKEN_OPERATOR_TYPE)
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
+      ((OperatorToken*)myself)->arity = POSTFIX;
     return myself;
   }Catch(err) {
     printf("%c/n", err->errorMsg);
