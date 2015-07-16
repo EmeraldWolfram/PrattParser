@@ -13,10 +13,6 @@ void extendMultiCharacterOperator(){
   
 }
 
-
-
-
-
 Token* infixNud(Token* myself){
   // char* symbol = ((OperatorToken*)myself)->symbol;
   // if(myself->type == TOKEN_OPERATOR_TYPE){

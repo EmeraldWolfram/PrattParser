@@ -12,10 +12,10 @@
                 UNITY_TEST_FAIL(lineNo,buffer);                                                   \
                 }
 
-#define TEST_ASSERT_EQUAL_TOKEN_TREE(expectedOper, token1, token2, actualOper);         \
+#define TEST_ASSERT_EQUAL_TOKEN_TREE(expectedOper, token1, token2, actualOper);                   \
            customTestAssertTokenTree(expectedOper, token1, token2, actualOper, __LINE__);
         
-#define TEST_ASSERT_EQUAL_OPERATOR(expectedOper, actualOper);                           \
+#define TEST_ASSERT_EQUAL_OPERATOR(expectedOper, actualOper);                                     \
            customTestAssertOperator(expectedOper, actualOper, __LINE__);
 
 void customTestAssertTokenTree(Token* expectedOper, Token* token1, Token* token2, OperatorToken *actualOper, int lineNumber);

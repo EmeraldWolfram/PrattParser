@@ -13,12 +13,12 @@ struct OperatorAttributes_t{
   Token* (*extend)(Token *token, OperatorAttributes *attributes);
 };
 
-// OperatorAttributes_t operatorAttributesTable[] = {
-  // ['+'] = {20, INFIX, infixNud, infixLed},
-  // ['*'] = {30, INFIX, infixNud, infixLed},
-  // ['-'] = {20, INFIX, infixNud, infixLed},
-  // ['/'] = {30, INFIX, infixNud, infixLed}
-// };
+OperatorAttributes_t operatorAttributesTable[] = {
+  ['+'] = {20, INFIX, infixNud, infixLed},
+  ['*'] = {30, INFIX, infixNud, infixLed},
+  ['-'] = {20, INFIX, infixNud, infixLed},
+  ['/'] = {30, INFIX, infixNud, infixLed}
+};
 
 Token* infixLed(Token* myself);
 Token* infixNud(Token* myself);

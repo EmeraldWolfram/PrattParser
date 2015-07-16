@@ -431,7 +431,7 @@ void test_parser_with_2_INCREMENT_EOT_should_change_INFIX_to_POSTFIX(void){
  *             (-)
  *            /   \
  *          (*)   (8)
- *         /  \
+ *          / \
  *      (++)  (--)
  *      /     /
  *    (2)   (6)
