@@ -481,7 +481,14 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
 
 
 
+//character 'a' had been recognized as integer token.
+void test_parser_with_2_a_3_EOT_to_show_error_msg(void){
+  IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken   = (OperatorToken*)createOperatorToken("a",INFIX);
 
+  IntegerToken* lastIntToken    = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
+}
 
 
 
