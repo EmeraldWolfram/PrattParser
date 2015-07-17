@@ -61,7 +61,7 @@ Token* infixNud(Token* myself){
     }
     return myself;
   }Catch(err) {
-    printf("%c/n", err->errorMsg);
+    printf("%s/n", err->errorMsg);
   }
 }
 
@@ -76,7 +76,7 @@ Token* infixLed(Token* myself){
     
     return myself;
   }Catch(err) {
-    printf("%c/n", err->errorMsg);
+    printf("%c\n", err->errorMsg);
   }
 }
 
