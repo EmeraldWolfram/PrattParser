@@ -5,28 +5,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-void extendSingleCharacterOperator(){
+OperatorAttributes operatorAttributesTable[] = {
+  ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['+'] = {50, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['-'] = {50, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['&'] = {10, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['*'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['^'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['!'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['='] = {20, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['('] = {80, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['['] = {80, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
+};
+
+Token* extendSingleCharacterOperator(){
   
 }
-
-void extendMultiCharacterOperator(){
+Token* extendDoubleCharacterOperator(){
   
 }
-
-Token* infixNud(Token* myself){
-  // char* symbol = ((OperatorToken*)myself)->symbol;
-  // if(myself->type == TOKEN_OPERATOR_TYPE){
-    // if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0)
-      // ((OperatorToken*)myself)->token[0] = parser(100);
-    // else
-      // printf("ERROR: PREFIX can only be '-' or '+'");//THROW ERROR
-  // }
-  return myself;
+Token* extendTripleCharacterOperator(){
+  
 }
-Token* infixLed(Token* myself){
-  // if(myself->type != TOKEN_OPERATOR_TYPE)
-    // printf("ERROR: (%d) is not an Operator!", ((IntegerToken*)myself)->value);//THROW ERROR
-  // else
-    
-  return myself;
+Token* extendQuadrupleCharacterOperator(){
+  
 }

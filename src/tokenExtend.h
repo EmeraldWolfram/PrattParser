@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 typedef struct OperatorAttributes_t OperatorAttributes;
-
 struct OperatorAttributes_t{
   uint32_t bindingPower;
   Arity arity;
@@ -13,20 +12,12 @@ struct OperatorAttributes_t{
   Token* (*extend)(Token *token, OperatorAttributes *attributes);
 };
 
-// OperatorAttributes_t operatorAttributesTable[] = {
-  // ['+'] = {20, INFIX, infixNud, infixLed},
-  // ['*'] = {30, INFIX, infixNud, infixLed},
-  // ['-'] = {20, INFIX, infixNud, infixLed},
-  // ['/'] = {30, INFIX, infixNud, infixLed}
-// };
 
-Token* infixLed(Token* myself);
-Token* infixNud(Token* myself);
-void extendSingleCharacterOperator();
-void extendMultiCharacterOperator();
+//Token* infixLed(Token* myself);
+//Token* infixNud(Token* myself);
+Token* extendSingleCharacterOperator();
+Token* extendDoubleCharacterOperator();
+Token* extendTripleCharacterOperator();
+Token* extendQuadrupleCharacterOperator();
 
 #endif // tokenExtend_H
-
-
-// Token* nextToken = malloc(sizeof(Token));
-// nextToken->extend = extendSingleCharacterOperator(nextToken, operatorAttributesTable['++']);
