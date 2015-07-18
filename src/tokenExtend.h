@@ -15,9 +15,9 @@ struct OperatorAttributes_t{
 
 //Token* infixLed(Token* myself);
 //Token* infixNud(Token* myself);
-Token* extendSingleCharacterOperator();
-Token* extendDoubleCharacterOperator();
-Token* extendTripleCharacterOperator();
-Token* extendQuadrupleCharacterOperator();
+Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 
 #endif // tokenExtend_H
