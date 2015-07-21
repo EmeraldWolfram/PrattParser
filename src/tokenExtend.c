@@ -1,27 +1,11 @@
 #include "tokenExtend.h"
 #include "Token.h"
+#include "ErrorObject.h"
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-OperatorAttributes operatorAttributesTable[] = {
-  ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['^'] = { 9, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['!'] = {70, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
-};
 
 Token* extendSingleCharacterOperator(Token* thisOpr, OperatorAttributes *attr){
   ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
@@ -70,11 +54,11 @@ Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   else
     printf("ERROR");//ThrowError
   
-  if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&")){
+  if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&") == 0){
     ((OperatorToken*)thisOpr)->bindingPower = 7;
     ((OperatorToken*)thisOpr)->arity         = INFIX;
     }
-  if(strcmp(((OperatorToken*)thisOpr)->symbol, "||")){
+  if(strcmp(((OperatorToken*)thisOpr)->symbol, "||") == 0){
     ((OperatorToken*)thisOpr)->bindingPower = 6;
   }
   

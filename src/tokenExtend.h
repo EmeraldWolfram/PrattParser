@@ -1,6 +1,7 @@
 #ifndef tokenExtend_H
 #define tokenExtend_H
 #include "Token.h"
+#include "ErrorObject.h"
 #include <stdint.h>
 
 typedef struct OperatorAttributes_t OperatorAttributes;
@@ -12,9 +13,6 @@ struct OperatorAttributes_t{
   Token* (*extend)(Token *token, OperatorAttributes *attributes);
 };
 
-
-//Token* infixLed(Token* myself);
-//Token* infixNud(Token* myself);
 Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
