@@ -94,16 +94,27 @@ void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_return_MUL_4(void){
   TEST_ASSERT_EQUAL(60, mulToken->bindingPower);
 }
 
-
-/*
- *  When NULL token sub into infixNud,
- *  this test will throw error ERROR_NULL_TOKEN
+/*  createOperatorToken("/", INFIX) should create a pointer to OperatorToken
+ *
+ *                                     [OperatorToken]
+ *  [OperatorToken ptr] -------------> [      /      ]
+ *                                     [    INFIX    ]
+ *
+ *  When this token sub into infixNud,
+ *  this test will show error ILLEGAL PREFIX
  */
-void test_infixNud_given_NULL_Token_should_show_error_msg(void){
-  OperatorToken* nullToken = malloc(sizeof(OperatorToken));
-  
-  nullToken =  (OperatorToken*)infixNud(NULL);
+void test_infixNud_given_Token_of_DIV_should_show_error_msg(void){
+  OperatorToken* divToken = (OperatorToken*)createOperatorToken("/", INFIX);
+  ErrorObject* err;
+  Try{
+    divToken =  (OperatorToken*)infixNud((Token*)divToken);
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_ILLEGAL_PREFIX, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This is an illegal prefix!", err->errorMsg);
+    freeError(err);
+  }
 }
+
 /*  createOperatorToken("s", INFIX) should create a pointer to OperatorToken
  *
  *                                     [OperatorToken]
@@ -115,14 +126,16 @@ void test_infixNud_given_NULL_Token_should_show_error_msg(void){
  *  this test will show an error message to show that "s" is undefined operator.
  *
  */
-// void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
-  // OperatorToken* subToken = (OperatorToken*)createOperatorToken("s", INFIX);
-  // OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
-  // subToken->type    = TOKEN_UNKNOWN_TYPE;
+void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
+  OperatorToken* subToken = (OperatorToken*)createOperatorToken("s", INFIX);
+  subToken->type    = TOKEN_UNKNOWN_TYPE;
+  ErrorObject* err;
   
-  // subToken1 =  (OperatorToken*)infixLed((Token*)subToken);
-  // TEST_ASSERT_EQUAL(TOKEN_UNKNOWN_TYPE, subToken1->type);
-  // TEST_ASSERT_EQUAL("s", subToken1->symbol);
-  // TEST_ASSERT_EQUAL(INFIX, subToken1->arity);
-  // TEST_ASSERT_EQUAL(0, subToken1->bindingPower);
-// }
+  Try{
+    subToken =  (OperatorToken*)infixLed((Token*)subToken);
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    freeError(err);
+  }
+}

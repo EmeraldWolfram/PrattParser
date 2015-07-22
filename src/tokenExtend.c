@@ -23,43 +23,38 @@ OperatorAttributes operatorAttributesTable[] = {
   ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
+  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['$'] = {0, POSTFIX, infixNud, infixLed, extendSingleCharacterOperator}
 };
 
 Token* infixNud(Token* myself){
-
-  ErrorObject *err;
-  Try{
-    if(myself == NULL)
-      ThrowError("This is NULL token!", ERR_NULL_TOKEN);
-    else if(myself->type == TOKEN_OPERATOR_TYPE){
+    assert(myself != NULL);
+    if(myself->type == TOKEN_OPERATOR_TYPE){
       int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
       OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
       myself = attr->extend(myself, attr);
       if(attr->arity == PREFIX)
         ((OperatorToken*)myself)->token[0] = parser(100);
-      else
-        ThrowError("This is NULL token!", ERR_NULL_TOKEN);
+      else 
+        ThrowError("This is an illegal prefix!", ERR_ILLEGAL_PREFIX);
     }
-        return myself;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  }
+    return myself;
 }
 
 Token* infixLed(Token* myself){
-  ErrorObject *err;
   char* symbol = ((OperatorToken*)myself)->symbol;
-  Try{  
-    if(myself->type != TOKEN_OPERATOR_TYPE)
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
-    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
+  assert(myself != NULL);
+  if(myself->type != TOKEN_OPERATOR_TYPE)
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+  else{
+    int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
+    OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
+    myself = attr->extend(myself, attr);
+    ((OperatorToken*)myself)->arity = INFIX;
+    if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
       ((OperatorToken*)myself)->arity = POSTFIX;
-    
-    return myself;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
   }
+  return myself;
 }
 
 
@@ -73,70 +68,58 @@ Token* extendSingleCharacterOperator(Token* thisOpr, OperatorAttributes *attr){
 }
 
 Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){ 
-  ErrorObject *err;
-  Try{  
-    ((OperatorToken*)thisOpr)->nud           = attr->nud;
-    ((OperatorToken*)thisOpr)->led           = attr->led;
+  ((OperatorToken*)thisOpr)->nud           = attr->nud;
+  ((OperatorToken*)thisOpr)->led           = attr->led;
     
-    if(((OperatorToken*)thisOpr)->symbol[1] == 0){
-      ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
-      ((OperatorToken*)thisOpr)->arity         = attr->arity;
-    }
-    else if(((OperatorToken*)thisOpr)->symbol[1] == '='){
-      ((OperatorToken*)thisOpr)->bindingPower  = 5;
-      ((OperatorToken*)thisOpr)->arity         = INFIX;
-    }
-    else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "*=","*" etc, then throw error.
+  if(((OperatorToken*)thisOpr)->symbol[1] == 0){
+    ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
+    ((OperatorToken*)thisOpr)->arity         = attr->arity;
+  }
+  else if(((OperatorToken*)thisOpr)->symbol[1] == '='){
+    ((OperatorToken*)thisOpr)->bindingPower  = 5;
+    ((OperatorToken*)thisOpr)->arity         = INFIX;
+  }
+  else
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "*=","*" etc, then throw error.
   
-    if(strcmp(((OperatorToken*)thisOpr)->symbol, "==") == 0)
-      ((OperatorToken*)thisOpr)->bindingPower = 20;
+  if(strcmp(((OperatorToken*)thisOpr)->symbol, "==") == 0)
+    ((OperatorToken*)thisOpr)->bindingPower = 20;  
     
-    
-    return thisOpr;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  }  
+  return thisOpr;
 }
 
 Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
-  ((OperatorToken*)thisOpr)->arity        = attr->arity;
+  ((OperatorToken*)thisOpr)->arity         = attr->arity;
   
-  ErrorObject *err;
-  Try{ 
-    if(((OperatorToken*)thisOpr)->symbol[1] == '='){
-      ((OperatorToken*)thisOpr)->bindingPower = 5;
-      ((OperatorToken*)thisOpr)->arity        = INFIX;
+  if(((OperatorToken*)thisOpr)->symbol[1] == '='){
+    ((OperatorToken*)thisOpr)->bindingPower = 5;
+    ((OperatorToken*)thisOpr)->arity        = INFIX;
+  }
+  else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0])
+    ((OperatorToken*)thisOpr)->bindingPower = 70;
+  else if(((OperatorToken*)thisOpr)->symbol[1] == 0)
+    ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
+  else
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "+=","++","+" etc, then throw error.
+   
+  if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&") == 0){
+    ((OperatorToken*)thisOpr)->bindingPower = 7;
+    ((OperatorToken*)thisOpr)->arity         = INFIX;
     }
-    else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0])
-      ((OperatorToken*)thisOpr)->bindingPower = 70;
-    else if(((OperatorToken*)thisOpr)->symbol[1] == 0)
-      ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
-    else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "+=","++","+" etc, then throw error.
+  if(strcmp(((OperatorToken*)thisOpr)->symbol, "||") == 0){
+    ((OperatorToken*)thisOpr)->bindingPower = 6;
+  }
     
-    if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&") == 0){
-      ((OperatorToken*)thisOpr)->bindingPower = 7;
-      ((OperatorToken*)thisOpr)->arity         = INFIX;
-      }
-    if(strcmp(((OperatorToken*)thisOpr)->symbol, "||") == 0){
-      ((OperatorToken*)thisOpr)->bindingPower = 6;
-    }
-    
-    return thisOpr;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  }  
+  return thisOpr;
 }
 
 Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   ((OperatorToken*)thisOpr)->arity         = attr->arity;
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
-  ErrorObject *err;
-  Try{   
+
     if(((OperatorToken*)thisOpr)->symbol[1] == 0)
       ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;  
     else if(((OperatorToken*)thisOpr)->symbol[1] == '=')
@@ -152,7 +135,4 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr
     else
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "<","<=", then throw error.
     return thisOpr;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  } 
 }
