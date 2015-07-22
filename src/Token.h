@@ -9,14 +9,6 @@
 #define DIV 30
 #define EOT 0
 
-// Token *nud(){
-  // if
-    // return
-  // else
-    // return 
-// }
-
-
 typedef enum {
 	TOKEN_UNKNOWN_TYPE,
 	TOKEN_INTEGER_TYPE,

@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "mock_getToken.h"
 #include "Token.h"
-#include "mock_ErrorObject.h"
+#include "ErrorObject.h"
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -85,7 +85,7 @@ void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_show_error_msg(void){
   OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
   subToken = (OperatorToken*)createOperatorToken("*", INFIX);
   
-  subToken1 =  infixNud(subToken);
+  subToken1 =  (OperatorToken*)infixNud((Token*)subToken);
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, subToken->type);
   TEST_ASSERT_EQUAL("*", subToken->symbol);
   TEST_ASSERT_EQUAL(INFIX, subToken->arity);

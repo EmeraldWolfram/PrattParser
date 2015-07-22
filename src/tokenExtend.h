@@ -1,10 +1,10 @@
 #ifndef tokenExtend_H
 #define tokenExtend_H
 #include "Token.h"
+#include "ErrorObject.h"
 #include <stdint.h>
 
 typedef struct OperatorAttributes_t OperatorAttributes;
-
 struct OperatorAttributes_t{
   uint32_t bindingPower;
   Arity arity;
@@ -13,20 +13,9 @@ struct OperatorAttributes_t{
   Token* (*extend)(Token *token, OperatorAttributes *attributes);
 };
 
-// OperatorAttributes_t operatorAttributesTable[] = {
-  // ['+'] = {20, INFIX, infixNud, infixLed},
-  // ['*'] = {30, INFIX, infixNud, infixLed},
-  // ['-'] = {20, INFIX, infixNud, infixLed},
-  // ['/'] = {30, INFIX, infixNud, infixLed}
-// };
-
-Token* infixLed(Token* myself);
-Token* infixNud(Token* myself);
-void extendSingleCharacterOperator();
-void extendMultiCharacterOperator();
+Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 
 #endif // tokenExtend_H
-
-
-// Token* nextToken = malloc(sizeof(Token));
-// nextToken->extend = extendSingleCharacterOperator(nextToken, operatorAttributesTable['++']);

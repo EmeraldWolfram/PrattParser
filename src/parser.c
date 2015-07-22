@@ -10,7 +10,7 @@ Token* parser(int prevBindingPower){
   OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
   OperatorToken* currentToken = malloc(sizeof(OperatorToken));
-  Token* nextToken = malloc(sizeof(Token));
+  Token* nextToken            = malloc(sizeof(Token));
   
   nextToken       = getToken();
   nextToken->nud  = infixNud;

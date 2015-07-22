@@ -52,25 +52,31 @@ Token* infixNud(Token* myself){
   Try{
     char* symbol = ((OperatorToken*)myself)->symbol;
     if(myself->type == TOKEN_OPERATOR_TYPE){
-      if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0 || strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
-        ((OperatorToken*)myself)->token[0] = parser(100);
+      if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0 || strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0){
+        ((OperatorToken*)myself)->token[0]  = parser(100);
+        ((OperatorToken*)myself)->arity     = PREFIX;
+      }
       else
         ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
     }
     return myself;
   }Catch(err) {
-    printf("%c/n", err->errorMsg);
+    printf("%s\n", err->errorMsg);
   }
 }
 
 Token* infixLed(Token* myself){
   ErrorObject *err;
+  char* symbol = ((OperatorToken*)myself)->symbol;
   Try{  
     if(myself->type != TOKEN_OPERATOR_TYPE)
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
+      ((OperatorToken*)myself)->arity = POSTFIX;
+    
     return myself;
   }Catch(err) {
-    printf("%c/n", err->errorMsg);
+    printf("%s\n", err->errorMsg);
   }
 }
 
