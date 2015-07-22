@@ -5,7 +5,7 @@
 #include "tokenExtend.h"
 #include "mock_parser.h"
 
-OperatorAttributes operatorAttributesTable[] = {
+OperatorAttributes operatorAttributesTable1[] = {
   ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
   ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
   ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
@@ -28,10 +28,9 @@ void setUp(void){}
 void tearDown(void){}
 
 void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_PREFIX(void){
-  OperatorToken* invert   = malloc(sizeof(OperatorToken) + sizeof(OperatorAttributes));
-  invert->symbol          = "~";
+  OperatorToken* invert   = (OperatorToken*)createOperatorToken("~", INFIX);
   int thisSymbol          = (int)(*invert->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable[thisSymbol];
+  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
   
   invert = (OperatorToken*)oprAttr.extend((Token*)invert, &oprAttr);
   
@@ -40,10 +39,9 @@ void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_
 }
 
 void test_extendDoubleCharacterOperator_given_DIV_and_Table_should_assign_60_INFIX(void){
-  OperatorToken* div  = malloc(sizeof(OperatorToken) + sizeof(OperatorAttributes));
-  div->symbol         = "/";
+  OperatorToken* div  = (OperatorToken*)createOperatorToken("/", INFIX);
   int thisSymbol      = (int)(*div->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable[thisSymbol];
+  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
   
   div = (OperatorToken*)oprAttr.extend((Token*)div, &oprAttr);
   
@@ -52,10 +50,9 @@ void test_extendDoubleCharacterOperator_given_DIV_and_Table_should_assign_60_INF
 }
 
 void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PREFIX(void){
-  OperatorToken* incr  = malloc(sizeof(OperatorToken) + sizeof(OperatorAttributes));
-  incr->symbol         = "++";
+  OperatorToken* incr  = (OperatorToken*)createOperatorToken("++", INFIX);
   int thisSymbol      = (int)(*incr->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable[thisSymbol];
+  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
   
   incr = (OperatorToken*)oprAttr.extend((Token*)incr, &oprAttr);
   
@@ -64,10 +61,9 @@ void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PR
 }
 
 void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_70_INFIX(void){
-  OperatorToken* rotate   = malloc(sizeof(OperatorToken) + sizeof(OperatorAttributes));
-  rotate->symbol          = "<<";
+  OperatorToken* rotate   = (OperatorToken*)createOperatorToken(">>", INFIX);
   int thisSymbol          = (int)(*rotate->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable[thisSymbol];
+  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
   
   rotate = (OperatorToken*)oprAttr.extend((Token*)rotate, &oprAttr);
   
@@ -79,24 +75,35 @@ void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_
  *
  *                                     [OperatorToken]
  *  [OperatorToken ptr] -------------> [      *      ]
- *                                     [    INFIX    ]
+ *                                     [    PREFIX   ]
  *
  *  When this token sub into infixNud,
- *  this test will show an error message to show that "*" is not a prefix operator.
- *
+ *  this test will return     (*)  
+ *                            /
+ *                          (4)
  */
-void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_show_error_msg(void){
-  OperatorToken* subToken = malloc(sizeof(OperatorToken));
-  OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
-  subToken = (OperatorToken*)createOperatorToken("*", INFIX);
+void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_return_MUL_4(void){
+  OperatorToken* mulToken = (OperatorToken*)createOperatorToken("*", INFIX);
+  IntegerToken* intToken4 = (IntegerToken*)createIntegerToken(4);
+  parser_ExpectAndReturn(100, (Token*)intToken4);
   
-  subToken1 =  (OperatorToken*)infixNud((Token*)subToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, subToken->type);
-  TEST_ASSERT_EQUAL("*", subToken->symbol);
-  TEST_ASSERT_EQUAL(INFIX, subToken->arity);
-  TEST_ASSERT_EQUAL(MUL, subToken->bindingPower);
+  mulToken =  (OperatorToken*)infixNud((Token*)mulToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, mulToken->type);
+  TEST_ASSERT_EQUAL("*", mulToken->symbol);
+  TEST_ASSERT_EQUAL(PREFIX, mulToken->arity);
+  TEST_ASSERT_EQUAL(60, mulToken->bindingPower);
 }
 
+
+/*
+ *  When NULL token sub into infixNud,
+ *  this test will throw error ERROR_NULL_TOKEN
+ */
+void test_infixNud_given_NULL_Token_should_show_error_msg(void){
+  OperatorToken* nullToken = malloc(sizeof(OperatorToken));
+  
+  nullToken =  (OperatorToken*)infixNud(NULL);
+}
 /*  createOperatorToken("s", INFIX) should create a pointer to OperatorToken
  *
  *                                     [OperatorToken]
@@ -108,16 +115,14 @@ void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_show_error_msg(void){
  *  this test will show an error message to show that "s" is undefined operator.
  *
  */
-void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
-  OperatorToken* subToken = malloc(sizeof(OperatorToken));
-  OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
-  subToken = (OperatorToken*)createOperatorToken("s", INFIX);
+// void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
+  // OperatorToken* subToken = (OperatorToken*)createOperatorToken("s", INFIX);
+  // OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
+  // subToken->type    = TOKEN_UNKNOWN_TYPE;
   
-  subToken->type    = TOKEN_UNKNOWN_TYPE;
-  
-  subToken1 =  (OperatorToken*)infixLed((Token*)subToken);
-  TEST_ASSERT_EQUAL(TOKEN_UNKNOWN_TYPE, subToken->type);
-  TEST_ASSERT_EQUAL("s", subToken->symbol);
-  TEST_ASSERT_EQUAL(INFIX, subToken->arity);
-  TEST_ASSERT_EQUAL(0, subToken->bindingPower);
-}
+  // subToken1 =  (OperatorToken*)infixLed((Token*)subToken);
+  // TEST_ASSERT_EQUAL(TOKEN_UNKNOWN_TYPE, subToken1->type);
+  // TEST_ASSERT_EQUAL("s", subToken1->symbol);
+  // TEST_ASSERT_EQUAL(INFIX, subToken1->arity);
+  // TEST_ASSERT_EQUAL(0, subToken1->bindingPower);
+// }
