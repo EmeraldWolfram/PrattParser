@@ -23,35 +23,40 @@ OperatorAttributes operatorAttributesTable[] = {
   ['='] = { 5, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  [')'] = {70, POSTFIX,infixNud, infixLed, extendSingleCharacterOperator},
+  [')'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  [']'] = {70, POSTFIX,infixNud, infixLed, extendSingleCharacterOperator},
+  [']'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['$'] = {0,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['#'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['{'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['}'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['@'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['?'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['.'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  [','] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  [';'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['"'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['\'']= {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['`'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['\\']= {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['a' ... 'z'] = {0,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  ['A' ... 'Z'] = {0,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  [48 ... 57] = {0,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
+  ['#'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['{'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['}'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['@'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['?'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['.'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  [','] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  [';'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['"'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['\'']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['`'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['\\']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['a' ... 'z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
+  ['A' ... 'Z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
+  [48 ... 57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
 };
 
 Token* infixNud(Token* myself){
     assert(myself != NULL);
     if(myself->type == TOKEN_OPERATOR_TYPE){
-      int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
-      OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
-      myself = attr->extend(myself, attr);
-      if(attr->arity == PREFIX)
-        ((OperatorToken*)myself)->token[0] = parser(100);
+      int thisSymbol            = *(char*)((OperatorToken*)myself)->symbol;
+      OperatorAttributes* attr  = &operatorAttributesTable[thisSymbol];
+      
+      myself  = attr->extend(myself, attr);
+      if(attr->arity == PREFIX){
+        if(((OperatorToken*)myself)->symbol != "(")
+          ((OperatorToken*)myself)->token[0] = parser(100);
+        else
+          ((OperatorToken*)myself)->token[0] = parser(0);
+      }
       else 
         ThrowError("This is an illegal prefix!", ERR_ILLEGAL_PREFIX);
     }
