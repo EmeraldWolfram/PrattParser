@@ -5,6 +5,8 @@
 #include "tokenExtend.h"
 #include "mock_parser.h"
 
+
+ErrorObject* err;
 OperatorAttributes operatorAttributesTable1[] = {
   ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
   ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
@@ -105,9 +107,9 @@ void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_return_MUL_4(void){
  */
 void test_infixNud_given_Token_of_DIV_should_show_error_msg(void){
   OperatorToken* divToken = (OperatorToken*)createOperatorToken("/", INFIX);
-  ErrorObject* err;
   Try{
     divToken =  (OperatorToken*)infixNud((Token*)divToken);
+    TEST_FAIL_MESSAGE("Expecting ERR_ILLEGAL_PREFIX but none thrown.");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_PREFIX, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This is an illegal prefix!", err->errorMsg);
@@ -128,14 +130,32 @@ void test_infixNud_given_Token_of_DIV_should_show_error_msg(void){
  */
 void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
   OperatorToken* subToken = (OperatorToken*)createOperatorToken("s", INFIX);
-  subToken->type    = TOKEN_UNKNOWN_TYPE;
-  ErrorObject* err;
   
   Try{
     subToken =  (OperatorToken*)infixLed((Token*)subToken);
+    TEST_FAIL_MESSAGE("Expecting ERR_ILLEGAL_CHARACTER but none thrown.");
   }Catch(err){
-    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This is illegal character!", err->errorMsg);
     freeError(err);
   }
 }
+
+void test_infixLed_given_Token_of_Infix_symbol_3_should_show_error_msg(void){
+  OperatorToken* subToken = (OperatorToken*)createOperatorToken("3", INFIX);
+  
+  Try{
+    subToken =  (OperatorToken*)infixLed((Token*)subToken);
+    TEST_FAIL_MESSAGE("Expecting ERR_UNEXPECTED_INTEGER but none thrown.");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_INTEGER, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Integer unexpected to be here!",  err->errorMsg);
+    freeError(err);
+  }
+}
+
+
+
+
+
+

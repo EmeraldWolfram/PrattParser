@@ -20,6 +20,10 @@ Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendErrorOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendCharacterErrorOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendIntegerErrorOperator(Token *thisOpr, OperatorAttributes *attr);
+
 Token* infixNud(Token* myself);
 Token* infixLed(Token* myself);
 

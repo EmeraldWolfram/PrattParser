@@ -21,7 +21,8 @@ typedef enum {
 typedef enum {
 	PREFIX, //-2
 	INFIX,	//2*2
-	POSTFIX	//x++
+	POSTFIX,	//x++
+  NOFIX
 } Arity;
 
 typedef enum {

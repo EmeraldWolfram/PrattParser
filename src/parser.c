@@ -30,7 +30,7 @@ Token* parser(int prevBindingPower){
   else
     return (Token*)nextIntToken;
   
-  do{  
+  do{
     currentToken = (OperatorToken*)peepToken();
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
