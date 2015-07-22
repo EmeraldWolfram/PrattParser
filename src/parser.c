@@ -42,6 +42,9 @@ Token* parser(int prevBindingPower){
       currentToken->token[1] = parser(currentToken->bindingPower);
       nextOprToken = currentToken;
     }
-  }while(strcmp(currentToken->symbol, "$") != 0 && prevBindingPower == 0);
+  }while(strcmp(currentToken->symbol, "$") != 0 \
+      && strcmp(currentToken->symbol, ")") != 0 \
+      && strcmp(currentToken->symbol, "]") != 0 \
+      && prevBindingPower == 0);
   return (Token*)nextOprToken;
 }

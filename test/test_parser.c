@@ -484,7 +484,7 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
 
 
 //character 'a' had been recognized as integer token.
-void test_parser_with_2_a_3_EOT_to_show_error_msg(void){
+void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
   IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken   = (OperatorToken*)createOperatorToken("a",INFIX);
 
@@ -495,8 +495,9 @@ void test_parser_with_2_a_3_EOT_to_show_error_msg(void){
   peepToken_ExpectAndReturn((Token*)testOprToken); 
           
   Try{
-  Token* testToken = malloc(sizeof(Token*));  
-  testToken = parser(0);
+    Token* testToken = malloc(sizeof(Token*));  
+    testToken = parser(0);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This is illegal character!",  err->errorMsg);
@@ -504,13 +505,13 @@ void test_parser_with_2_a_3_EOT_to_show_error_msg(void){
   }
 }
 
-
-/**this test have error.
- *
+/**
  *  Obtain tokens of ( , 2 , + , 3 , ) , * , 4
+ *                                   ^
+ *                                   This token will be ignored
  *
  *  The parser should linked up and form a token tree as follow
- *  This test check if '+' can link to another OperatorToken ('*' in this case)
+ *  This test check if '(' can link in Nud function
  *
  *
  *            (*)
@@ -537,16 +538,14 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MU
   OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  getToken_ExpectAndReturn((Token*)testOprToken_OPEN);                      //In parser(0), formed (parser(0))
-  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);  //In parser(0), formed 2 + parser(20)
-  getToken_ExpectAndReturn((Token*)testIntToken_3);                         //In parser(20), nud get 3
-  peepToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                    //In parser(20), led GET ) check bindingPower
-  peepToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                    //Return parser(0), peep ) to check for EOT
-  getToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                     //Get ) and Return parser(0)
-  peepToken_ExpectAndReturn((Token*)testOprToken_MUL);
-  getToken_ExpectAndReturn((Token*)testOprToken_MUL);
-  getToken_ExpectAndReturn((Token*)lastIntToken_4);
-  peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(20), peep '$' to check for EOT and RETURN to parser(0)
+  getToken_ExpectAndReturn((Token*)testOprToken_OPEN);                      //In parser(0), formed (*parser(0))
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);  //In *parser(0), formed 2 + parser(20)
+  bindingPowerWeakerThanPreviousToken(testOprToken_CLOSE,testIntToken_3);   //In parser(20), formed 2 + 3
+  peepToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                    //RETURN to *parser(0)
+  getToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                     //RETURN to parser(0) and completed (2 + 3)
+  peepToken_ExpectAndReturn((Token*)testOprToken_MUL);                      //In parser(0), peep '*' for comparison
+  getToken_ExpectAndReturn((Token*)testOprToken_MUL);                       //In parser(0), formed (2+3) * parser(30)
+  bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken_4);        //In parser(30), RETURN to parser(0) and completed (2 + 3) * 4
   peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
   Token* testToken = malloc(sizeof(Token*));
@@ -554,10 +553,93 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MU
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
   
-  // TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("(", PREFIX), createInteger(4), (OperatorToken*)testToken);
-  // open = (OperatorToken*)((OperatorToken*)testToken)->token[0];
-  // open
-  // TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("(", PREFIX), createIntegerToken(4), (OperatorToken*)testToken);
+  open = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  add  = (OperatorToken*)open->token[0];
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("+", INFIX), (OperatorToken*)open->token[0])
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
 }
 
+/**
+ *  Obtain tokens of 2 , ( , 3 , * , 4 , )
+ *                                       ^
+ *                                       This token will be ignored
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '(' can link in Led function
+ *
+ *
+ *            (()
+ *           /  \
+ *         (2)  (*)
+ *              / \
+ *            (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_OPEN_3_MUL_4_CLOSE_EOT_should_return_3_MUL_4_then_OPEN_2(void){
+  IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_OPEN  = (OperatorToken*)createOperatorToken("(",INFIX);
+  
+  IntegerToken* testIntToken_3      = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_MUL   = (OperatorToken*)createOperatorToken("*",INFIX);
+  
+  IntegerToken* lastIntToken_4      = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* testOprToken_CLOSE = (OperatorToken*)createOperatorToken(")",INFIX);
+  OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
+//MOCK peepToken and getToken
+  bindingPowerStrongerThanPreviousToken(testOprToken_OPEN, testIntToken_2);  //In parser(0), formed 2 (*parser(0))
+  bindingPowerStrongerThanPreviousToken(testOprToken_MUL, testIntToken_3);   //In *parser(0), formed 3 * parser(30)
+  bindingPowerWeakerThanPreviousToken(testOprToken_CLOSE, lastIntToken_4);   //RETURN to *parser(0) and completed 3 * 4
+  peepToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                     //check for EOT/Close bracket
+  getToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                      //RETURN to parser(0) and completed 2 (3 * 4)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                           //In parser(0), peep '$' to check for EOT and RETURN Token Tree
+  
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+// ********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("(",INFIX), createIntegerToken(2), createOperatorToken("*", INFIX), (OperatorToken*)testToken);
+  multiply = (OperatorToken*)((OperatorToken*)testToken)->token[1];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);  
+}
+
+/**
+ *  Obtain tokens of ( , 2 , + , 3 , ) , 4
+ *                                   ^
+ *                                   This token will be ignored
+ *
+ *  The parser should linked up (2 + 3) and throw ERR_UNEXPECTED_IDENTIFIER as it expect an operator after ")"
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_IDENTIFIER(void){
+  OperatorToken* testOprToken_OPEN  = (OperatorToken*)createOperatorToken("(",INFIX);
+  IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_ADD   = (OperatorToken*)createOperatorToken("+",INFIX);
+  
+  IntegerToken* testIntToken_3      = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_CLOSE = (OperatorToken*)createOperatorToken(")",INFIX);
+ 
+  IntegerToken* lastIntToken_4      = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* lastOprToken       = (OperatorToken*)createOperatorToken("$",POSTFIX);
+
+//MOCK peepToken and getToken
+  getToken_ExpectAndReturn((Token*)testOprToken_OPEN);                      //In parser(0), formed (*parser(0))
+  bindingPowerStrongerThanPreviousToken(testOprToken_ADD, testIntToken_2);  //In *parser(0), formed 2 + parser(20)
+  bindingPowerWeakerThanPreviousToken(testOprToken_CLOSE,testIntToken_3);   //In parser(20), formed 2 + 3
+  peepToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                    //RETURN to *parser(0)
+  getToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                     //RETURN to parser(0) and completed (2 + 3)
+  peepToken_ExpectAndReturn((Token*)lastIntToken_4);                        //In parser(0), peep '*' for comparison
+
+  Try{
+    Token* testToken = malloc(sizeof(Token*));
+    testToken = parser(0);
+    TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_IDENTIFIER but no error thrown!");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_IDENTIFIER, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained identifier token!",  err->errorMsg);
+    freeError(err);
+  }
+}

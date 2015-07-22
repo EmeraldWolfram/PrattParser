@@ -22,9 +22,9 @@ OperatorAttributes operatorAttributesTable[] = {
   ['!'] = {70, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['='] = { 5, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['('] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   [')'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['['] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   [']'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['$'] = {0,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['#'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
@@ -41,7 +41,7 @@ OperatorAttributes operatorAttributesTable[] = {
   ['\\']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
   ['a' ... 'z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
   ['A' ... 'Z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  [48 ... 57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
+  [48  ...  57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
 };
 
 Token* infixNud(Token* myself){
@@ -52,7 +52,7 @@ Token* infixNud(Token* myself){
       
       myself  = attr->extend(myself, attr);
       if(attr->arity == PREFIX){
-        if(((OperatorToken*)myself)->symbol != "(")
+        if(strcmp(((OperatorToken*)myself)->symbol,"(") != 0)
           ((OperatorToken*)myself)->token[0] = parser(100);
         else
           ((OperatorToken*)myself)->token[0] = parser(0);
@@ -64,10 +64,10 @@ Token* infixNud(Token* myself){
 }
 
 Token* infixLed(Token* myself){
-  char* symbol = ((OperatorToken*)myself)->symbol;
   assert(myself != NULL);
+  char* symbol = ((OperatorToken*)myself)->symbol;
   if(myself->type != TOKEN_OPERATOR_TYPE)
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    ThrowError("Expected operator token but obtained identifier token!", ERR_UNEXPECTED_IDENTIFIER);
   else{
     int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
     OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
