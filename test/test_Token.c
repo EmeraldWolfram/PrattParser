@@ -1,8 +1,5 @@
 #include "unity.h"
-#include "mock_getToken.h"
 #include "Token.h"
-#include "ErrorObject.h"
-#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,7 +60,7 @@ void test_createOperatorToken_given_symbol_ADD_and_MUL_should_return_OperatorTok
 }
 
 
-/*  createOperatorToken("+", INFIX) should create a pointer to OperatorToken
+/*  createOperatorToken("-", PREFIX) should create a pointer to OperatorToken
  *    
  *                                     [OperatorToken]
  *  [OperatorToken ptr] -------------> [      -      ]
@@ -79,15 +76,6 @@ void test_createOperatorToken_given_Prefix_symbol_SUB_should_return_OperatorToke
   TEST_ASSERT_EQUAL(SUB, subToken->bindingPower);
 }
 
-  //the error msg are not shown. 
-void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_show_error_msg(void){
-  OperatorToken* subToken = malloc(sizeof(OperatorToken));
-  OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
-  subToken = (OperatorToken*)createOperatorToken("*", INFIX);
-  
-  subToken1 =  (OperatorToken*)infixNud((Token*)subToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, subToken->type);
-  TEST_ASSERT_EQUAL("*", subToken->symbol);
-  TEST_ASSERT_EQUAL(INFIX, subToken->arity);
-  TEST_ASSERT_EQUAL(MUL, subToken->bindingPower);
-}
+
+
+

@@ -4,6 +4,8 @@
 #include "ErrorObject.h"
 #include <stdint.h>
 
+
+
 typedef struct OperatorAttributes_t OperatorAttributes;
 struct OperatorAttributes_t{
   uint32_t bindingPower;
@@ -17,5 +19,7 @@ Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
 Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* infixNud(Token* myself);
+Token* infixLed(Token* myself);
 
 #endif // tokenExtend_H

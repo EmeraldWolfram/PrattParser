@@ -81,8 +81,7 @@ typedef struct {
 Token *createOperatorToken(char *symbol, Arity AR);
 Token *createIntegerToken(int value);
 
-Token* infixNud(Token* myself);
-Token* infixLed(Token* myself);
+
 
 #endif // Token_H
 

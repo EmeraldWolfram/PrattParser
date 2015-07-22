@@ -1,7 +1,4 @@
 #include "Token.h"
-#include "parser.h"
-#include "ErrorObject.h"
-#include "CException.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,49 +43,11 @@
  *
  */
 
-Token* infixNud(Token* myself){
-
-  ErrorObject *err;
-  Try{
-    char* symbol = ((OperatorToken*)myself)->symbol;
-    if(myself->type == TOKEN_OPERATOR_TYPE){
-      if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0 || strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0){
-        ((OperatorToken*)myself)->token[0]  = parser(100);
-        ((OperatorToken*)myself)->arity     = PREFIX;
-      }
-      else
-        ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
-    }
-    return myself;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  }
-}
-
-Token* infixLed(Token* myself){
-  ErrorObject *err;
-  char* symbol = ((OperatorToken*)myself)->symbol;
-  Try{  
-    if(myself->type != TOKEN_OPERATOR_TYPE)
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
-    else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
-      ((OperatorToken*)myself)->arity = POSTFIX;
-    
-    return myself;
-  }Catch(err) {
-    printf("%s\n", err->errorMsg);
-  }
-}
 
 
-Token *createOperatorToken(char *symbol, Arity AR){
-  int i;
-  if(AR == INFIX)
-    i = 2;
-  else
-    i = 1;
-  
-  OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * i);
+
+Token *createOperatorToken(char *symbol, Arity AR){  
+  OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * 2);
   
   if(strcmp(symbol,"+") == 0 || strcmp(symbol,"-") == 0)
     op->bindingPower  = 20;
