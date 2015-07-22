@@ -9,22 +9,39 @@
 #include <string.h>
 
 OperatorAttributes operatorAttributesTable[] = {
-  ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['<'] = {30, INFIX,  infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['>'] = {30, INFIX,  infixNud, infixLed, extendQuadrupleCharacterOperator},
   ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
   ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
   ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['|'] = { 8, INFIX,  infixNud, infixLed, extendTripleCharacterOperator},
   ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['^'] = { 9, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['!'] = {70, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['/'] = {60, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
+  ['%'] = {60, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
+  ['^'] = { 9, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
+  ['!'] = {70, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
+  ['='] = { 5, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  [')'] = {70, POSTFIX,infixNud, infixLed, extendSingleCharacterOperator},
   ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['$'] = {0, POSTFIX, infixNud, infixLed, extendSingleCharacterOperator}
+  [']'] = {70, POSTFIX,infixNud, infixLed, extendSingleCharacterOperator},
+  ['$'] = {0,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
+  ['#'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['{'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['}'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['@'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['?'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['.'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  [','] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  [';'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['"'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['\'']= {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['`'] = {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['\\']= {0,  NOFIX,  infixNud, infixLed, extendErrorOperator},
+  ['a' ... 'z'] = {0,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
+  ['A' ... 'Z'] = {0,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
+  [48 ... 57] = {0,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
 };
 
 Token* infixNud(Token* myself){
@@ -136,3 +153,17 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "<","<=", then throw error.
     return thisOpr;
 }
+
+Token* extendCharacterErrorOperator(Token *thisOpr, OperatorAttributes *attr){
+  ThrowError("This is illegal character!", ERR_ILLEGAL_CHARACTER);
+}
+
+Token* extendErrorOperator(Token *thisOpr, OperatorAttributes *attr){
+  ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+}
+
+Token* extendIntegerErrorOperator(Token *thisOpr, OperatorAttributes *attr){
+  ThrowError("Integer unexpected to be here!", ERR_UNEXPECTED_INTEGER);
+}
+
+
