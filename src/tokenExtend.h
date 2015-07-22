@@ -2,6 +2,7 @@
 #define tokenExtend_H
 #include "Token.h"
 #include "ErrorObject.h"
+#include "CException.h"
 #include <stdint.h>
 
 
