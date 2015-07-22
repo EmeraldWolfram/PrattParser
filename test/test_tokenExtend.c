@@ -1,7 +1,7 @@
 #include "unity.h"
 #include <stdlib.h>
 #include "Token.h"
-#include "mock_ErrorObject.h"
+#include "ErrorObject.h"
 #include "tokenExtend.h"
 #include "mock_parser.h"
 
@@ -75,3 +75,49 @@ void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_
   TEST_ASSERT_EQUAL(40, rotate->bindingPower);
 }
 
+/*  createOperatorToken("*", INFIX) should create a pointer to OperatorToken
+ *
+ *                                     [OperatorToken]
+ *  [OperatorToken ptr] -------------> [      *      ]
+ *                                     [    INFIX    ]
+ *
+ *  When this token sub into infixNud,
+ *  this test will show an error message to show that "*" is not a prefix operator.
+ *
+ */
+void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_show_error_msg(void){
+  OperatorToken* subToken = malloc(sizeof(OperatorToken));
+  OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
+  subToken = (OperatorToken*)createOperatorToken("*", INFIX);
+  
+  subToken1 =  (OperatorToken*)infixNud((Token*)subToken);
+  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, subToken->type);
+  TEST_ASSERT_EQUAL("*", subToken->symbol);
+  TEST_ASSERT_EQUAL(INFIX, subToken->arity);
+  TEST_ASSERT_EQUAL(MUL, subToken->bindingPower);
+}
+
+/*  createOperatorToken("s", INFIX) should create a pointer to OperatorToken
+ *
+ *                                     [OperatorToken]
+ *  [OperatorToken ptr] -------------> [      s      ]
+ *                                     [    INFIX    ]
+ *
+ *  This token is TOKEN_UNKNOWN_TYPE.
+ *  When this token sub into infixLed,
+ *  this test will show an error message to show that "s" is undefined operator.
+ *
+ */
+void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
+  OperatorToken* subToken = malloc(sizeof(OperatorToken));
+  OperatorToken* subToken1 = malloc(sizeof(OperatorToken));
+  subToken = (OperatorToken*)createOperatorToken("s", INFIX);
+  
+  subToken->type    = TOKEN_UNKNOWN_TYPE;
+  
+  subToken1 =  (OperatorToken*)infixLed((Token*)subToken);
+  TEST_ASSERT_EQUAL(TOKEN_UNKNOWN_TYPE, subToken->type);
+  TEST_ASSERT_EQUAL("s", subToken->symbol);
+  TEST_ASSERT_EQUAL(INFIX, subToken->arity);
+  TEST_ASSERT_EQUAL(0, subToken->bindingPower);
+}
