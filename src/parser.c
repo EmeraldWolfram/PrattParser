@@ -32,6 +32,10 @@ Token* parser(int prevBindingPower){
   
   do{
     currentToken = (OperatorToken*)peepToken();
+    if(strcmp(currentToken->symbol, ")") == 0){
+      currentToken = (OperatorToken*)getToken();
+      return (Token*)nextOprToken;
+    }
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
       currentToken->token[0] = (Token*)nextOprToken;
