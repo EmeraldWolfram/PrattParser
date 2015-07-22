@@ -3,42 +3,45 @@
 #include "ErrorObject.h"
 #include "CException.h"
 #include "parser.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// OperatorAttributes operatorAttributesTable[] = {
-  // ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  // ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  // ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  // ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  // ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  // ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  // ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['^'] = { 9, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['!'] = {70, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  // ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  // ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  // ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
-// };
+OperatorAttributes operatorAttributesTable[] = {
+  ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
+  ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
+  ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['^'] = { 9, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['!'] = {70, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
+  ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
+};
 
 Token* infixNud(Token* myself){
 
   ErrorObject *err;
   Try{
-    char* symbol = ((OperatorToken*)myself)->symbol;
-    if(myself->type == TOKEN_OPERATOR_TYPE){
-      if(strcmp(symbol,"-") == 0 || strcmp(symbol,"+") == 0 || strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0){
-        ((OperatorToken*)myself)->token[0]  = parser(100);
-        ((OperatorToken*)myself)->arity     = PREFIX;
-      }
+    if(myself == NULL)
+      ThrowError("This is NULL token!", ERR_NULL_TOKEN);
+    else if(myself->type == TOKEN_OPERATOR_TYPE){
+      int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
+      OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
+      myself = attr->extend(myself, attr);
+      if(attr->arity == PREFIX)
+        ((OperatorToken*)myself)->token[0] = parser(100);
       else
-        ThrowError("This is not a legal PREFIX operator!", ERR_ILLEGAL_PREFIX);
+        ThrowError("This is NULL token!", ERR_NULL_TOKEN);
     }
-    return myself;
+        return myself;
   }Catch(err) {
     printf("%s\n", err->errorMsg);
   }
@@ -75,13 +78,13 @@ Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
     ((OperatorToken*)thisOpr)->nud           = attr->nud;
     ((OperatorToken*)thisOpr)->led           = attr->led;
     
-    if(((OperatorToken*)thisOpr)->symbol[1] == '='){
-      ((OperatorToken*)thisOpr)->bindingPower  = 5;
-      ((OperatorToken*)thisOpr)->arity         = INFIX;
-    }
-    else if(((OperatorToken*)thisOpr)->symbol[1] == 0){
+    if(((OperatorToken*)thisOpr)->symbol[1] == 0){
       ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
       ((OperatorToken*)thisOpr)->arity         = attr->arity;
+    }
+    else if(((OperatorToken*)thisOpr)->symbol[1] == '='){
+      ((OperatorToken*)thisOpr)->bindingPower  = 5;
+      ((OperatorToken*)thisOpr)->arity         = INFIX;
     }
     else
       ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "*=","*" etc, then throw error.
