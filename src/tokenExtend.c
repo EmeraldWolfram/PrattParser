@@ -22,9 +22,9 @@ OperatorAttributes operatorAttributesTable[] = {
   ['!'] = {70, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['='] = { 5, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['('] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   [')'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
+  ['['] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
   [']'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['$'] = {0,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
   ['#'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
@@ -41,7 +41,7 @@ OperatorAttributes operatorAttributesTable[] = {
   ['\\']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
   ['a' ... 'z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
   ['A' ... 'Z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  [48 ... 57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
+  [48  ...  57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
 };
 
 Token* infixNud(Token* myself){
@@ -52,7 +52,7 @@ Token* infixNud(Token* myself){
       
       myself  = attr->extend(myself, attr);
       if(attr->arity == PREFIX){
-        if(((OperatorToken*)myself)->symbol != "(")
+        if(strcmp(((OperatorToken*)myself)->symbol,"(") != 0)
           ((OperatorToken*)myself)->token[0] = parser(100);
         else
           ((OperatorToken*)myself)->token[0] = parser(0);
@@ -64,10 +64,10 @@ Token* infixNud(Token* myself){
 }
 
 Token* infixLed(Token* myself){
-  char* symbol = ((OperatorToken*)myself)->symbol;
   assert(myself != NULL);
+  char* symbol = ((OperatorToken*)myself)->symbol;
   if(myself->type != TOKEN_OPERATOR_TYPE)
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    ThrowError("Expected operator token but obtained identifier token!", ERR_UNEXPECTED_IDENTIFIER);
   else{
     int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
     OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
@@ -81,11 +81,14 @@ Token* infixLed(Token* myself){
 
 
 Token* extendSingleCharacterOperator(Token* thisOpr, OperatorAttributes *attr){
-  ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
-  ((OperatorToken*)thisOpr)->arity         = attr->arity;
-  ((OperatorToken*)thisOpr)->nud           = attr->nud;
-  ((OperatorToken*)thisOpr)->led           = attr->led;
-  
+  if(((OperatorToken*)thisOpr)->symbol[1] == 0){
+    ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
+    ((OperatorToken*)thisOpr)->arity         = attr->arity;
+    ((OperatorToken*)thisOpr)->nud           = attr->nud;
+    ((OperatorToken*)thisOpr)->led           = attr->led;
+  }
+  else
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);  //Throw error such as "~X", where X can be any character
   return thisOpr;
 }
 
@@ -98,11 +101,15 @@ Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
     ((OperatorToken*)thisOpr)->arity         = attr->arity;
   }
   else if(((OperatorToken*)thisOpr)->symbol[1] == '='){
-    ((OperatorToken*)thisOpr)->bindingPower  = 5;
-    ((OperatorToken*)thisOpr)->arity         = INFIX;
+    if(((OperatorToken*)thisOpr)->symbol[2] == 0){
+      ((OperatorToken*)thisOpr)->bindingPower  = 5;
+      ((OperatorToken*)thisOpr)->arity         = INFIX;
+    }
+    else
+      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //Throw error such as "*=X" detected, where X can be any character
   }
   else
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "*=","*" etc, then throw error.
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //Throw error when "*X" detected, where X can be any character
   
   if(strcmp(((OperatorToken*)thisOpr)->symbol, "==") == 0)
     ((OperatorToken*)thisOpr)->bindingPower = 20;  
@@ -116,15 +123,23 @@ Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   ((OperatorToken*)thisOpr)->arity         = attr->arity;
   
   if(((OperatorToken*)thisOpr)->symbol[1] == '='){
-    ((OperatorToken*)thisOpr)->bindingPower = 5;
-    ((OperatorToken*)thisOpr)->arity        = INFIX;
+    if(((OperatorToken*)thisOpr)->symbol[2] == 0){
+      ((OperatorToken*)thisOpr)->bindingPower = 5;
+      ((OperatorToken*)thisOpr)->arity        = INFIX;
+    }
+    else
+      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when "+=X" detected, where X can be any character
   }
-  else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0])
-    ((OperatorToken*)thisOpr)->bindingPower = 70;
+  else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0]){
+    if(((OperatorToken*)thisOpr)->symbol[2] == 0)
+      ((OperatorToken*)thisOpr)->bindingPower = 70;
+    else
+      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when "++X" detected, where X can be any character
+  }
   else if(((OperatorToken*)thisOpr)->symbol[1] == 0)
     ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
   else
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "+=","++","+" etc, then throw error.
+    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when "+X" detected, where X can be any character other than '=' or itself
    
   if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&") == 0){
     ((OperatorToken*)thisOpr)->bindingPower = 7;
@@ -144,18 +159,26 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr
 
     if(((OperatorToken*)thisOpr)->symbol[1] == 0)
       ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;  
-    else if(((OperatorToken*)thisOpr)->symbol[1] == '=')
-      ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
+    else if(((OperatorToken*)thisOpr)->symbol[1] == '='){
+      if(((OperatorToken*)thisOpr)->symbol[2] == 0)
+        ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
+      else
+        ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when ">=X" detected, where X can be any character
+    }
     else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0]){
       if(((OperatorToken*)thisOpr)->symbol[2] == 0)
         ((OperatorToken*)thisOpr)->bindingPower = 40;
-      else if(((OperatorToken*)thisOpr)->symbol[2] == '=')
-        ((OperatorToken*)thisOpr)->bindingPower = 5;
+      else if(((OperatorToken*)thisOpr)->symbol[2] == '='){
+        if(((OperatorToken*)thisOpr)->symbol[3] == 0)
+          ((OperatorToken*)thisOpr)->bindingPower = 5;
+        else
+          ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when ">>=X" detected, where X can be any character
+      }
       else
-        ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "<<","<<=", then throw error.
+        ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when ">>X" detected, where X can be any character except '='
     }
     else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //When not "<","<=", then throw error.
+      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);          //Throw error when ">X" detected, where X can be any character except '=' and itself
     return thisOpr;
 }
 
