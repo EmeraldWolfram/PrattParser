@@ -38,7 +38,7 @@ struct Token_t{
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-	char* str;
+  char* str;
 };
 
 typedef struct {
@@ -47,8 +47,8 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-	char* str;
-	int value;
+  char* str;
+  int value;
 } IntegerToken;
 
 typedef struct {
@@ -57,8 +57,8 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-	char* str;
-	double value;
+  char* str;
+  double value;
 } FloatToken;
 
 typedef struct {
@@ -67,8 +67,8 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-	char* str;
-	char *name;
+  char* str;
+  char *name;
 	Token* token;
 } IdentifierToken, StringToken;
 
@@ -78,11 +78,11 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-	char* str;
-	char *symbol;
+  char* str;
+  char *symbol;
   int bindingPower;
-	Arity arity;
-	Token *token[0];
+  Arity arity;
+  Token *token[0];
 } OperatorToken;
 
 Token *createOperatorToken(char *symbol, Arity AR);
