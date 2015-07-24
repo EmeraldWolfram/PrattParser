@@ -3,17 +3,17 @@
 
 #include <stdint.h>
 
-#define SUB 20
-#define ADD 20
-#define MUL 30
-#define DIV 30
 #define EOT 0
+
+#define Octal 8
+#define Decimal 10
+#define Hexdecimal 16
 
 typedef enum {
 	TOKEN_UNKNOWN_TYPE,
 	TOKEN_INTEGER_TYPE,
-	TOKEN_OPERATOR_TYPE,
 	TOKEN_FLOAT_TYPE,
+	TOKEN_OPERATOR_TYPE,
 	TOKEN_STRING_TYPE,
 	TOKEN_IDENTIFIER_TYPE,
 } TokenType;
@@ -38,6 +38,7 @@ struct Token_t{
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+	char* str;
 };
 
 typedef struct {
@@ -46,6 +47,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+	char* str;
 	int value;
 } IntegerToken;
 
@@ -55,6 +57,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+	char* str;
 	double value;
 } FloatToken;
 
@@ -64,7 +67,9 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+	char* str;
 	char *name;
+	Token* token;
 } IdentifierToken, StringToken;
 
 typedef struct {
@@ -73,6 +78,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+	char* str;
 	char *symbol;
   int bindingPower;
 	Arity arity;
