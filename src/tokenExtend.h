@@ -5,26 +5,29 @@
 #include "CException.h"
 #include <stdint.h>
 
-
-
-typedef struct OperatorAttributes_t OperatorAttributes;
-struct OperatorAttributes_t{
+typedef struct Attributes_t Attributes;
+struct Attributes_t{
   uint32_t bindingPower;
   Arity arity;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
-  Token* (*extend)(Token *token, OperatorAttributes *attributes);
+  Token* (*extend)(Token *token, Attributes *attributes);
 };
 
-Token* extendSingleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendErrorOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendCharacterErrorOperator(Token *thisOpr, OperatorAttributes *attr);
-Token* extendIntegerErrorOperator(Token *thisOpr, OperatorAttributes *attr);
+Token* extendSingleCharacterOperator(Token *thisOpr, Attributes *attr);
+Token* extendDoubleCharacterOperator(Token *thisOpr, Attributes *attr);
+Token* extendTripleCharacterOperator(Token *thisOpr, Attributes *attr);
+Token* extendQuadrupleCharacterOperator(Token *thisOpr, Attributes *attr);
+Token* extendExpression(Token *thisExpression, Attributes *attr);
 
-Token* infixNud(Token* myself);
+Token* extendErrorOperator(Token *thisOpr, Attributes *attr);
+Token* extendCharacterErrorOperator(Token *thisOpr, Attributes *attr);
+Token* extendIntegerErrorOperator(Token *thisOpr, Attributes *attr);
+
+Token* prefixNud(Token* myself);
+Token* expressionNud(Token* myself);
+Token* errorNud(Token* myself);
 Token* infixLed(Token* myself);
+Token* errorLed(Token* myself);
 
 #endif // tokenExtend_H
