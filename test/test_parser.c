@@ -500,7 +500,7 @@ void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This is illegal character!",  err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("Character operator is illegal!",  err->errorMsg);
     freeError(err);
   }
 }
@@ -611,10 +611,10 @@ void test_parser_with_2_OPEN_3_MUL_4_CLOSE_EOT_should_return_3_MUL_4_then_OPEN_2
  *                                   ^
  *                                   This token will be ignored
  *
- *  The parser should linked up (2 + 3) and throw ERR_UNEXPECTED_IDENTIFIER as it expect an operator after ")"
+ *  The parser should linked up (2 + 3) and throw ERR_UNEXPECTED_EXPRESSION as it expect an operator after ")"
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
-void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_IDENTIFIER(void){
+void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_EXPRESSION(void){
   OperatorToken* testOprToken_OPEN  = (OperatorToken*)createOperatorToken("(",INFIX);
   IntegerToken* testIntToken_2      = (IntegerToken*)createIntegerToken(2);
   OperatorToken* testOprToken_ADD   = (OperatorToken*)createOperatorToken("+",INFIX);
@@ -636,10 +636,10 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_IDENT
   Try{
     Token* testToken = malloc(sizeof(Token*));
     testToken = parser(0);
-    TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_IDENTIFIER but no error thrown!");
+    TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error thrown!");
   }Catch(err){
-    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_IDENTIFIER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained identifier token!",  err->errorMsg);
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_EXPRESSION, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained expression!",  err->errorMsg);
     freeError(err);
   }
 }

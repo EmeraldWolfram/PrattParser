@@ -7,19 +7,25 @@
 #include <stdio.h>
 #include <string.h>
 
+extern Attributes operatorAttributesTable[];
+extern Attributes tokenTypeAttributesTable[];
+
 Token* parser(int prevBindingPower){
-  OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
-  IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
-  OperatorToken* currentToken = malloc(sizeof(OperatorToken));
   Token* nextToken            = malloc(sizeof(Token));
+  IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
+  OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
+  OperatorToken* currentToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
+  Attributes* attr            = malloc(sizeof(Attributes));
   
-  nextToken       = getToken();
-  nextToken->nud  = infixNud;
-  nextIntToken    = (IntegerToken*)nextToken->nud(nextToken);
+  nextToken     = getToken();
+  attr          = &tokenTypeAttributesTable[nextToken->type];
+  nextIntToken  = (IntegerToken*)attr->extend(nextToken, attr);
+  nextIntToken  = (IntegerToken*)nextToken->nud((Token*)nextIntToken);
   
-  nextToken       = peepToken();
-  nextToken->led  = infixLed;
-  nextOprToken    = (OperatorToken*)nextToken->led(nextToken);
+  nextToken     = peepToken();
+  attr          = &tokenTypeAttributesTable[nextToken->type];
+  nextOprToken  = (OperatorToken*)attr->extend(nextToken, attr);
+  nextOprToken  = (OperatorToken*)nextToken->led((Token*)nextOprToken);
   
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
@@ -32,9 +38,12 @@ Token* parser(int prevBindingPower){
   
   do{
     currentToken = (OperatorToken*)peepToken();
-    if(strcmp(currentToken->symbol, ")") == 0){
+    attr         = &tokenTypeAttributesTable[currentToken->type];
+    currentToken = (OperatorToken*)attr->extend((Token*)currentToken, attr);
+    currentToken = (OperatorToken*)currentToken->led((Token*)currentToken);
+    if(strcmp(currentToken->symbol, ")") == 0 \
+    || strcmp(currentToken->symbol, "]") == 0){
       currentToken = (OperatorToken*)getToken();
-      return (Token*)nextOprToken;
     }
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
