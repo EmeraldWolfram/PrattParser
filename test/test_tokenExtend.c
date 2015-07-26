@@ -338,7 +338,7 @@ void test_extendIntegerErrorOperator_should_always_throw_ERR_ILLEGAL_INTEGER(voi
     testToken = (OperatorToken*)attr.extend((Token*)testToken, &attr);
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error were thrown");
   } Catch(err){
-    TEST_ASSERT_EQUAL(ERR_ILLEGAL_INTEGER, err->errorCode);
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_INTEGER, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("Integer operator is illegal!", err->errorMsg);    
   }
 }

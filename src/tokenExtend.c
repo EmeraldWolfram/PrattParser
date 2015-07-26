@@ -211,7 +211,7 @@ Token* extendExpression(Token *thisExpression, Attributes *attr){
 
 
 Token* extendCharacterErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("This is illegal character!", ERR_ILLEGAL_CHARACTER);
+  ThrowError("Character operator is illegal!", ERR_ILLEGAL_CHARACTER);
 }
 
 Token* extendErrorOperator(Token *thisOpr, Attributes *attr){
@@ -219,7 +219,7 @@ Token* extendErrorOperator(Token *thisOpr, Attributes *attr){
 }
 
 Token* extendIntegerErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("Integer unexpected to be here!", ERR_UNEXPECTED_INTEGER);
+  ThrowError("Integer operator is illegal!", ERR_UNEXPECTED_INTEGER);
 }
 
 
