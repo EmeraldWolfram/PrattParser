@@ -23,9 +23,9 @@ Attributes operatorAttributesTable[] = {
   ['='] = { 5, INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
   ['~'] = {70, PREFIX, prefixNud, errorLed, extendSingleCharacterOperator},
   ['('] = {1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
-  [')'] = {1,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
+  [')'] = {0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
   ['['] = {1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
-  [']'] = {1,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
+  [']'] = {0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
   ['$'] = {0,  NOFIX,  errorNud,  infixLed, extendSingleCharacterOperator},
   ['#'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
   ['{'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
@@ -88,7 +88,7 @@ Token* infixLed(Token* myself){
 
 Token* errorLed(Token* myself){
   assert(myself != NULL);
-  ThrowError("Expected operator token but obtained identifier token!", ERR_UNEXPECTED_IDENTIFIER);
+  ThrowError("Expected operator token but obtained expression!", ERR_UNEXPECTED_EXPRESSION);
   return myself;
 }
 
@@ -219,7 +219,7 @@ Token* extendErrorOperator(Token *thisOpr, Attributes *attr){
 }
 
 Token* extendIntegerErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("Integer operator is illegal!", ERR_UNEXPECTED_INTEGER);
+  ThrowError("Integer operator is illegal!", ERR_ILLEGAL_INTEGER);
 }
 
 
