@@ -15,6 +15,7 @@ extern Attributes tokenTypeAttributesTable[];
  *  
  */
 Token* parser(int prevBindingPower){
+  printf("In parser(%d)\n", prevBindingPower);
   Token* nextToken            = malloc(sizeof(Token));
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
   OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
@@ -30,7 +31,7 @@ Token* parser(int prevBindingPower){
   attr          = &tokenTypeAttributesTable[nextToken->type];
   nextOprToken  = (OperatorToken*)attr->extend(nextToken, attr);
   nextOprToken  = (OperatorToken*)nextToken->led((Token*)nextOprToken);
-  
+  printf("cmp %d \t %d\n", (nextOprToken->bindingPower), prevBindingPower);
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
@@ -45,10 +46,14 @@ Token* parser(int prevBindingPower){
     attr         = &tokenTypeAttributesTable[currentToken->type];
     currentToken = (OperatorToken*)attr->extend((Token*)currentToken, attr);
     currentToken = (OperatorToken*)currentToken->led((Token*)currentToken);
+    printf("currentToken is %s\n", currentToken->symbol);
     if(strcmp(currentToken->symbol, ")") == 0 \
     || strcmp(currentToken->symbol, "]") == 0){
       currentToken = (OperatorToken*)getToken();
+      if(prevBindingPower == 1)
+        return (Token*)nextOprToken;
     }
+    printf("up cmp %d \t %d", currentToken->bindingPower, prevBindingPower);
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
       currentToken->token[0] = (Token*)nextOprToken;
@@ -56,8 +61,6 @@ Token* parser(int prevBindingPower){
       nextOprToken = currentToken;
     }
   }while(strcmp(currentToken->symbol, "$") != 0 \
-      && strcmp(currentToken->symbol, ")") != 0 \
-      && strcmp(currentToken->symbol, "]") != 0 \
       && prevBindingPower == 0);
   return (Token*)nextOprToken;
 }

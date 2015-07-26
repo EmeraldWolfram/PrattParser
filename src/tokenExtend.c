@@ -65,7 +65,7 @@ Token* prefixNud(Token* myself){
   && strcmp(((OperatorToken*)myself)->symbol,"[") != 0)
     ((OperatorToken*)myself)->token[0] = parser(100);
   else
-    ((OperatorToken*)myself)->token[0] = parser(0);
+    ((OperatorToken*)myself)->token[0] = parser(1);
   
   return myself;
 }
