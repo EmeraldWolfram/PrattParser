@@ -8,79 +8,91 @@
 #include <stdlib.h>
 #include <string.h>
 
-OperatorAttributes operatorAttributesTable[] = {
-  ['<'] = {30, INFIX,  infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['>'] = {30, INFIX,  infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['|'] = { 8, INFIX,  infixNud, infixLed, extendTripleCharacterOperator},
-  ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['/'] = {60, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
-  ['%'] = {60, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
-  ['^'] = { 9, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
-  ['!'] = {70, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
-  ['='] = { 5, INFIX,  infixNud, infixLed, extendDoubleCharacterOperator},
-  ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['('] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  [')'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {1,  PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  [']'] = {1,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['$'] = {0,  NOFIX,  infixNud, infixLed, extendSingleCharacterOperator},
-  ['#'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['{'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['}'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['@'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['?'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['.'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  [','] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  [';'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['"'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['\'']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['`'] = {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['\\']= {1,  NOFIX,  infixNud, infixLed, extendErrorOperator},
-  ['a' ... 'z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  ['A' ... 'Z'] = {1,  NOFIX,  infixNud, infixLed, extendCharacterErrorOperator},
-  [48  ...  57] = {1,  NOFIX,  infixNud, infixLed, extendIntegerErrorOperator}
+Attributes operatorAttributesTable[] = {
+  ['<'] = {30, INFIX,  errorNud, infixLed, extendQuadrupleCharacterOperator},
+  ['>'] = {30, INFIX,  errorNud, infixLed, extendQuadrupleCharacterOperator},
+  ['+'] = {50, PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
+  ['-'] = {50, PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
+  ['&'] = {10, PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
+  ['|'] = { 8, INFIX,  errorNud,  infixLed, extendTripleCharacterOperator},
+  ['*'] = {60, PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator},
+  ['/'] = {60, INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
+  ['%'] = {60, INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
+  ['^'] = { 9, INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
+  ['!'] = {70, PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator},
+  ['='] = { 5, INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
+  ['~'] = {70, PREFIX, prefixNud, errorLed, extendSingleCharacterOperator},
+  ['('] = {1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
+  [')'] = {1,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
+  ['['] = {1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
+  [']'] = {1,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
+  ['$'] = {0,  NOFIX,  errorNud,  infixLed, extendSingleCharacterOperator},
+  ['#'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['{'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['}'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['@'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['?'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['.'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  [','] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  [';'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['"'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['\'']= {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['`'] = {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['\\']= {1,  NOFIX,  errorNud, errorLed, extendErrorOperator},
+  ['a' ... 'z'] = {1,  NOFIX,  errorNud, errorLed, extendCharacterErrorOperator},
+  ['A' ... 'Z'] = {1,  NOFIX,  errorNud, errorLed, extendCharacterErrorOperator},
+  [48  ...  57] = {1,  NOFIX,  errorNud, errorLed, extendIntegerErrorOperator}
 };
 
-Token* infixNud(Token* myself){
-    assert(myself != NULL);
-    if(myself->type == TOKEN_OPERATOR_TYPE){
-      int thisSymbol            = *(char*)((OperatorToken*)myself)->symbol;
-      OperatorAttributes* attr  = &operatorAttributesTable[thisSymbol];
-      
-      myself  = attr->extend(myself, attr);
-      if(attr->arity == PREFIX){
-        if(strcmp(((OperatorToken*)myself)->symbol,"(") != 0)
-          ((OperatorToken*)myself)->token[0] = parser(100);
-        else
-          ((OperatorToken*)myself)->token[0] = parser(0);
-      }
-      else 
-        ThrowError("This is an illegal prefix!", ERR_ILLEGAL_PREFIX);
-    }
-    return myself;
+Attributes  tokenTypeAttributesTable[] = {
+  [TOKEN_OPERATOR_TYPE]   = {0, NOFIX, prefixNud, infixLed, extendExpression},
+  [TOKEN_UNKNOWN_TYPE]    = {0, NOFIX, errorNud,  errorLed, extendExpression},
+  [TOKEN_INTEGER_TYPE]    = {0, NOFIX, expressionNud, errorLed, extendExpression},
+  [TOKEN_FLOAT_TYPE]      = {0, NOFIX, expressionNud, errorLed, extendExpression},
+  [TOKEN_STRING_TYPE]     = {0, NOFIX, expressionNud, errorLed, extendExpression},
+  [TOKEN_IDENTIFIER_TYPE] = {0, NOFIX, expressionNud, errorLed, extendExpression}
+};
+
+
+Token* prefixNud(Token* myself){
+  assert(myself != NULL);
+  if(strcmp(((OperatorToken*)myself)->symbol,"(") != 0 \
+  && strcmp(((OperatorToken*)myself)->symbol,"[") != 0)
+    ((OperatorToken*)myself)->token[0] = parser(100);
+  else
+    ((OperatorToken*)myself)->token[0] = parser(0);
+  
+  return myself;
+}
+
+Token* expressionNud(Token* myself){
+  assert(myself != NULL);
+  return myself;
+}
+Token* errorNud(Token* myself){
+  assert(myself != NULL);
+  ThrowError("This is an illegal prefix!", ERR_ILLEGAL_PREFIX);
+  return myself;
 }
 
 Token* infixLed(Token* myself){
   assert(myself != NULL);
-  char* symbol = ((OperatorToken*)myself)->symbol;
-  if(myself->type != TOKEN_OPERATOR_TYPE)
-    ThrowError("Expected operator token but obtained identifier token!", ERR_UNEXPECTED_IDENTIFIER);
-  else{
-    int thisSymbol = *(char*)((OperatorToken*)myself)->symbol;
-    OperatorAttributes* attr = &operatorAttributesTable[thisSymbol];
-    myself = attr->extend(myself, attr);
+  if(strcmp(((OperatorToken*)myself)->symbol,"++") == 0 \
+  || strcmp(((OperatorToken*)myself)->symbol,"--") == 0)
+    ((OperatorToken*)myself)->arity = POSTFIX;
+  else
     ((OperatorToken*)myself)->arity = INFIX;
-    if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
-      ((OperatorToken*)myself)->arity = POSTFIX;
-  }
+  
   return myself;
 }
 
+Token* errorLed(Token* myself){
+  assert(myself != NULL);
+  ThrowError("Expected operator token but obtained identifier token!", ERR_UNEXPECTED_IDENTIFIER);
+  return myself;
+}
 
-Token* extendSingleCharacterOperator(Token* thisOpr, OperatorAttributes *attr){
+Token* extendSingleCharacterOperator(Token* thisOpr, Attributes *attr){
   if(((OperatorToken*)thisOpr)->symbol[1] == 0){
     ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
     ((OperatorToken*)thisOpr)->arity         = attr->arity;
@@ -92,7 +104,7 @@ Token* extendSingleCharacterOperator(Token* thisOpr, OperatorAttributes *attr){
   return thisOpr;
 }
 
-Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){ 
+Token* extendDoubleCharacterOperator(Token *thisOpr, Attributes *attr){ 
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
     
@@ -117,7 +129,7 @@ Token* extendDoubleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   return thisOpr;
 }
 
-Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
+Token* extendTripleCharacterOperator(Token *thisOpr, Attributes *attr){
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
   ((OperatorToken*)thisOpr)->arity         = attr->arity;
@@ -152,7 +164,7 @@ Token* extendTripleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
   return thisOpr;
 }
 
-Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr){
+Token* extendQuadrupleCharacterOperator(Token *thisOpr, Attributes *attr){
   ((OperatorToken*)thisOpr)->arity         = attr->arity;
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
@@ -182,16 +194,32 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, OperatorAttributes *attr
     return thisOpr;
 }
 
-Token* extendCharacterErrorOperator(Token *thisOpr, OperatorAttributes *attr){
-  ThrowError("This is illegal character!", ERR_ILLEGAL_CHARACTER);
+Token* extendExpression(Token *thisExpression, Attributes *attr){
+  if(thisExpression->type == TOKEN_UNKNOWN_TYPE)
+    ThrowError("Can't resolve Unknown type token!", ERR_UNKNOWN_TOKEN);
+  else if(thisExpression->type == TOKEN_OPERATOR_TYPE){
+    int thisSymbol  = *(char*)((OperatorToken*)thisExpression)->symbol;
+    attr            = &operatorAttributesTable[thisSymbol];
+    thisExpression  = attr->extend(thisExpression, attr);
+  }
+  else{
+    thisExpression->nud = attr->nud;
+    thisExpression->led = attr->led;
+  }
+  return thisExpression;
 }
 
-Token* extendErrorOperator(Token *thisOpr, OperatorAttributes *attr){
+
+Token* extendCharacterErrorOperator(Token *thisOpr, Attributes *attr){
+  ThrowError("Character operator is illegal!", ERR_ILLEGAL_CHARACTER);
+}
+
+Token* extendErrorOperator(Token *thisOpr, Attributes *attr){
   ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
 }
 
-Token* extendIntegerErrorOperator(Token *thisOpr, OperatorAttributes *attr){
-  ThrowError("Integer unexpected to be here!", ERR_UNEXPECTED_INTEGER);
+Token* extendIntegerErrorOperator(Token *thisOpr, Attributes *attr){
+  ThrowError("Integer operator is illegal!", ERR_UNEXPECTED_INTEGER);
 }
 
 

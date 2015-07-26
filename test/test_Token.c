@@ -51,12 +51,10 @@ void test_createOperatorToken_given_symbol_ADD_and_MUL_should_return_OperatorTok
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,addToken->type);
   TEST_ASSERT_EQUAL("+",addToken->symbol);
   TEST_ASSERT_EQUAL(INFIX,addToken->arity);
-  TEST_ASSERT_EQUAL(ADD,addToken->bindingPower);
   
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE,mulToken.type);
   TEST_ASSERT_EQUAL("*",mulToken.symbol);
   TEST_ASSERT_EQUAL(INFIX,mulToken.arity);
-  TEST_ASSERT_EQUAL(MUL,mulToken.bindingPower);
 }
 
 
@@ -73,7 +71,6 @@ void test_createOperatorToken_given_Prefix_symbol_SUB_should_return_OperatorToke
   TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, subToken->type);
   TEST_ASSERT_EQUAL("-", subToken->symbol);
   TEST_ASSERT_EQUAL(PREFIX, subToken->arity);
-  TEST_ASSERT_EQUAL(SUB, subToken->bindingPower);
 }
 
 

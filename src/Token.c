@@ -49,15 +49,6 @@
 Token *createOperatorToken(char *symbol, Arity AR){  
   OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * 2);
   
-  if(strcmp(symbol,"+") == 0 || strcmp(symbol,"-") == 0)
-    op->bindingPower  = 20;
-  else if(strcmp(symbol,"*") == 0 || strcmp(symbol,"/") == 0)
-    op->bindingPower  = 30;
-  else if(strcmp(symbol,"++") == 0 || strcmp(symbol,"--") == 0)
-    op->bindingPower  = 60;
-  else
-    op->bindingPower  = 0;
-  
   op->type    = TOKEN_OPERATOR_TYPE;
   op->symbol  = symbol;
   op->arity   = AR;
@@ -67,7 +58,7 @@ Token *createOperatorToken(char *symbol, Arity AR){
 
 Token *createIntegerToken(int value){
   IntegerToken* intTk = malloc(sizeof(IntegerToken));
-    intTk->type   = TOKEN_INTEGER_TYPE;
-    intTk->value  = value;
+  intTk->type   = TOKEN_INTEGER_TYPE;
+  intTk->value  = value;
   return (Token*)intTk;  
 }

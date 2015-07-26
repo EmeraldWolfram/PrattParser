@@ -5,25 +5,9 @@
 #include "tokenExtend.h"
 #include "mock_parser.h"
 
-
 ErrorObject* err;
-OperatorAttributes operatorAttributesTable1[] = {
-  ['<'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['>'] = {30, INFIX, infixNud, infixLed, extendQuadrupleCharacterOperator},
-  ['+'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['-'] = {50, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['&'] = {10, PREFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['|'] = { 8, INFIX, infixNud, infixLed, extendTripleCharacterOperator},
-  ['*'] = {60, PREFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['/'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['%'] = {60, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['^'] = { 9, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['!'] = {70, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['='] = { 5, INFIX, infixNud, infixLed, extendDoubleCharacterOperator},
-  ['~'] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['('] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = {70, PREFIX, infixNud, infixLed, extendSingleCharacterOperator}
-};
+extern Attributes operatorAttributesTable[];
+extern Attributes tokenTypeAttributesTable[];
 
 void setUp(void){}
 
@@ -40,15 +24,14 @@ void tearDown(void){}
  *  [symbol: "~"          ]           [symbol: "~"          ]
  *  [Arity: INFIX         ]     *->   [Arity: PREFIX        ]
  *                              *->   [bindingPower: 70     ]
- *                              *->   [nud: infixNud        ]
+ *                              *->   [nud: prefixNud       ]
  *                              *->   [led: infixLed        ]
- *                              *->   [extend: Single       ]
  *
  */
 void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_PREFIX(void){
   OperatorToken* invert   = (OperatorToken*)createOperatorToken("~", INFIX);
-  int thisSymbol          = (int)(*invert->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol          = *invert->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   invert = (OperatorToken*)oprAttr.extend((Token*)invert, &oprAttr);
   
@@ -66,12 +49,12 @@ void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_
  */
 void test_extendSingleCharacterOperator_given_INVERT_MUL_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* invert   = (OperatorToken*)createOperatorToken("~*", INFIX);
-  int thisSymbol          = (int)(*invert->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol          = *invert->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   Try{
     invert = (OperatorToken*)oprAttr.extend((Token*)invert, &oprAttr);
-    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but not error were thrown");
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
@@ -92,15 +75,14 @@ void test_extendSingleCharacterOperator_given_INVERT_MUL_and_Table_should_throw_
  *  [symbol: "/"          ]           [symbol: "/"          ]
  *  [Arity: INFIX         ]     *->   [Arity: INFIX         ]
  *                              *->   [bindingPower: 60     ]
- *                              *->   [nud: infixNud        ]
+ *                              *->   [nud: prefixNud       ]
  *                              *->   [led: infixLed        ]
- *                              *->   [extend: Double       ]
  *
  */
 void test_extendDoubleCharacterOperator_given_DIV_and_Table_should_assign_60_INFIX(void){
   OperatorToken* div  = (OperatorToken*)createOperatorToken("/", INFIX);
-  int thisSymbol      = (int)(*div->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol      = *div->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   div = (OperatorToken*)oprAttr.extend((Token*)div, &oprAttr);
   
@@ -116,12 +98,12 @@ void test_extendDoubleCharacterOperator_given_DIV_and_Table_should_assign_60_INF
  */
 void test_extendDoubleCharacterOperator_given_MUL_ADD_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* mul  = (OperatorToken*)createOperatorToken("*+", INFIX);
-  int thisSymbol      = (int)(*mul->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol      = *mul->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   Try{
     mul = (OperatorToken*)oprAttr.extend((Token*)mul, &oprAttr);
-    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but not error were thrown");
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
@@ -142,15 +124,14 @@ void test_extendDoubleCharacterOperator_given_MUL_ADD_and_Table_should_throw_ERR
  *  [symbol: "++"         ]           [symbol: "++"         ]
  *  [Arity: INFIX         ]     *->   [Arity: PREFIX        ]
  *                              *->   [bindingPower: 70     ]
- *                              *->   [nud: infixNud        ]
+ *                              *->   [nud: prefixNud       ]
  *                              *->   [led: infixLed        ]
- *                              *->   [extend: Triple       ]
  *
  */
 void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PREFIX(void){
-  OperatorToken* incr  = (OperatorToken*)createOperatorToken("++", INFIX);
-  int thisSymbol      = (int)(*incr->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  OperatorToken* incr = (OperatorToken*)createOperatorToken("++", INFIX);
+  int thisSymbol      = *incr->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   incr = (OperatorToken*)oprAttr.extend((Token*)incr, &oprAttr);
   
@@ -166,12 +147,12 @@ void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PR
  */
 void test_extendTripleCharacterOperator_given_INCR_XOR_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* incr = (OperatorToken*)createOperatorToken("++^", INFIX);
-  int thisSymbol      = (int)(*incr->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol      = *incr->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   Try{
     incr = (OperatorToken*)oprAttr.extend((Token*)incr, &oprAttr);
-    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but not error were thrown");
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
@@ -182,7 +163,7 @@ void test_extendTripleCharacterOperator_given_INCR_XOR_and_Table_should_throw_ER
  *  can be 4 different operator function.
  *  
  *  Example,
- *    extendTriple differentiate '>>' from '>', '>>=' and '>='
+ *    extendQuadruple differentiate '>>' from '>', '>>=' and '>='
  *    then assign attribute to '>>' from the attribute table.
  *
  *  Given the token '>>' the attribute should be assign as shown below
@@ -192,15 +173,15 @@ void test_extendTripleCharacterOperator_given_INCR_XOR_and_Table_should_throw_ER
  *  [symbol: ">>"         ]           [symbol: ">>"         ]
  *  [Arity: INFIX         ]           [Arity: INFIX         ]
  *                              *->   [bindingPower: 40     ]
- *                              *->   [nud: infixNud        ]
+ *                              *->   [nud: prefixNud       ]
  *                              *->   [led: infixLed        ]
- *                              *->   [extend: Quadruple    ]
+ *            
  *
  */
 void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_70_INFIX(void){
   OperatorToken* rotate   = (OperatorToken*)createOperatorToken(">>", INFIX);
-  int thisSymbol          = (int)(*rotate->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol          = *rotate->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   rotate = (OperatorToken*)oprAttr.extend((Token*)rotate, &oprAttr);
   
@@ -211,103 +192,156 @@ void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_
  *  The extendQuadrupleCharacterOperator function will assign attribute to operator
  *  can be 4 different operator function.
  *  
- *  Given the token '>>=4', extendTripleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *  Given the token '>>=4', extendQuadrupleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
  *
  */
 void test_extendQuadrupleCharacterOperator_given_ROTATE_EQUAL_4_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* rotate = (OperatorToken*)createOperatorToken(">>=4", INFIX);
-  int thisSymbol      = (int)(*rotate->symbol);
-  OperatorAttributes oprAttr  = operatorAttributesTable1[thisSymbol];
+  int thisSymbol      = *rotate->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
   
   Try{
     rotate = (OperatorToken*)oprAttr.extend((Token*)rotate, &oprAttr);
-    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but not error were thrown");
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
   }
 }
-/*  createOperatorToken("*", INFIX) should create a pointer to OperatorToken
+
+/**
+ *  The extendExpression function will assign attributes to Integer Token, Float Token, Identifier Token,
+ *  String Token and Operator Token.
+ *  
+ *  Example,
+ *    extendExpression differentiate different token type then assign attribute according to attribute table.
  *
- *                                     [OperatorToken]
- *  [OperatorToken ptr] -------------> [      *      ]
- *                                     [    PREFIX   ]
+ *  Given the token with value 12, the attribute should be assign as shown below
  *
- *  When this token sub into infixNud,
- *  this test will return     (*)  
- *                            /
- *                          (4)
+ *  [Type: IntegerToken*  ]           [Type: IntegerToken*  ]
+ *  [name: intToken       ]           [name: intToken       ]
+ *  [value: 12            ]           [value: 12            ]
+ *  [nud: NULL            ]     *->   [nud: expressionNud   ]
+ *  [led: NULL            ]     *->   [led: errorLed        ]
+ *               
+ *
  */
-void test_infixNud_given_Token_of_Prefix_symbol_MUL_should_return_MUL_4(void){
-  OperatorToken* mulToken = (OperatorToken*)createOperatorToken("*", INFIX);
-  IntegerToken* intToken4 = (IntegerToken*)createIntegerToken(4);
-  parser_ExpectAndReturn(100, (Token*)intToken4);
+void test_extendExpression_given_IntegerToken_and_Table_should_assign_expressionNud_and_errorLed(void){
+  IntegerToken* intToken  = (IntegerToken*)createIntegerToken(12);
+  Attributes intAttr      = tokenTypeAttributesTable[intToken->type];
+  intToken                = (IntegerToken*)intAttr.extend((Token*)intToken, &intAttr);
   
-  mulToken =  (OperatorToken*)infixNud((Token*)mulToken);
-  TEST_ASSERT_EQUAL(TOKEN_OPERATOR_TYPE, mulToken->type);
-  TEST_ASSERT_EQUAL("*", mulToken->symbol);
-  TEST_ASSERT_EQUAL(PREFIX, mulToken->arity);
-  TEST_ASSERT_EQUAL(60, mulToken->bindingPower);
+  TEST_ASSERT_EQUAL(intToken->nud, expressionNud);
+  TEST_ASSERT_EQUAL(intToken->led, errorLed);
 }
 
-/*  createOperatorToken("/", INFIX) should create a pointer to OperatorToken
+/**
+ *  The extendExpression function will assign attributes to Integer Token, Float Token, Identifier Token,
+ *  String Token and Operator Token.
+ *  
+ *  Example,
+ *    extendExpression differentiate different token type then assign attribute according to attribute table.
  *
- *                                     [OperatorToken]
- *  [OperatorToken ptr] -------------> [      /      ]
- *                                     [    INFIX    ]
+ *  Given the OperatorToken '%', the function will call extend  (extendDoubleCharacterOperator in this case) 
+ *  function to assign attributes.
  *
- *  When this token sub into infixNud,
- *  this test will show error ILLEGAL PREFIX
+ *  [Type: OperatorToken* ]           [Type: OperatorToken* ]
+ *  [name: oprToken       ]           [name: oprToken       ]
+ *  [symbol: '%'          ]           [symbol: '%'          ]
+ *  [bindingPower: NULL   ]     *->   [bindingPower: 60     ]
+ *  [arity: INFIX         ]           [arity: INFIX         ]
+ *  [nud: NULL            ]     *->   [nud: errorNud        ]
+ *  [led: NULL            ]     *->   [led: infixLed        ]
+ *               
+ *
  */
-void test_infixNud_given_Token_of_DIV_should_show_error_msg(void){
-  OperatorToken* divToken = (OperatorToken*)createOperatorToken("/", INFIX);
+void test_extendExpression_given_OperatorToken_REMAINDER_and_Table_should_assign_errorNud_and_infixLed(void){
+  OperatorToken* oprToken  = (OperatorToken*)createOperatorToken("%", INFIX);
+  Attributes  oprAttr      = tokenTypeAttributesTable[oprToken->type];
+  oprToken                 = (OperatorToken*)extendExpression((Token*)oprToken, &oprAttr);
+  
+  TEST_ASSERT_EQUAL(oprToken->nud, errorNud);
+  TEST_ASSERT_EQUAL(oprToken->led, infixLed);
+  TEST_ASSERT_EQUAL(60, oprToken->bindingPower);
+}
+
+/**
+ *  The extendExpression function will assign attributes to Integer Token, Float Token, Identifier Token,
+ *  String Token and Operator Token.
+ *  
+ *  Example,
+ *    extendExpression differentiate different token type then assign attribute according to attribute table.
+ *
+ *  Given an unknown type token should throw ERR_UNKNOWN_TOKEN
+ */
+void test_extendExpression_given_Unknown_Token_and_Table_should_throw_ERR_UNKNOWN_TOKEN(void){
+  Token* testToken  = malloc(sizeof(Token));
+  testToken->type   = TOKEN_UNKNOWN_TYPE;
+  
   Try{
-    divToken =  (OperatorToken*)infixNud((Token*)divToken);
-    TEST_FAIL_MESSAGE("Expecting ERR_ILLEGAL_PREFIX but none thrown.");
-  }Catch(err){
-    TEST_ASSERT_EQUAL(ERR_ILLEGAL_PREFIX, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This is an illegal prefix!", err->errorMsg);
-    freeError(err);
+    Attributes attr   = tokenTypeAttributesTable[TOKEN_UNKNOWN_TYPE];
+    testToken         = extendExpression(testToken, &attr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNKNOWN_TOKEN but no error were thrown");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNKNOWN_TOKEN, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Can't resolve Unknown type token!", err->errorMsg);    
   }
 }
 
-/*  createOperatorToken("s", INFIX) should create a pointer to OperatorToken
+/**
+ *  extendErrorOperator is a function assign to possible undefined operator
+ *  The function will always throw ERR_UNDEFINED_OPERATOR when called
  *
- *                                     [OperatorToken]
- *  [OperatorToken ptr] -------------> [      s      ]
- *                                     [    INFIX    ]
- *
- *  This token is TOKEN_UNKNOWN_TYPE.
- *  When this token sub into infixLed,
- *  this test will show an error message to show that "s" is undefined operator.
+ *  Given an operator token should throw ERR_UNDEFINED_OPERATOR
+ */
+void test_extendErrorOperator_should_always_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* testToken  = (OperatorToken*)createOperatorToken("@", INFIX);
+
+  Try{
+    Attributes attr = tokenTypeAttributesTable[testToken->type];
+    testToken = (OperatorToken*)attr.extend((Token*)testToken, &attr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);    
+  }
+}
+
+/**
+ *  extendCharaterErrorOperator is a function that will throw ERR_ILLEGAL_CHARACTER
+ *  when an operator type token that have any symbol from 'a' to 'z' including uppercase,
  *
  */
-void test_infixLed_given_Token_of_Infix_symbol_s_should_show_error_msg(void){
-  OperatorToken* subToken = (OperatorToken*)createOperatorToken("s", INFIX);
-  
+void test_extendCharacterErrorOperator_should_always_throw_ERR_ILLEGAL_CHARACTER(void){
+  OperatorToken* testToken  = (OperatorToken*)createOperatorToken("G", INFIX);
+
   Try{
-    subToken =  (OperatorToken*)infixLed((Token*)subToken);
-    TEST_FAIL_MESSAGE("Expecting ERR_ILLEGAL_CHARACTER but none thrown.");
-  }Catch(err){
+    Attributes attr = tokenTypeAttributesTable[testToken->type];
+    testToken = (OperatorToken*)attr.extend((Token*)testToken, &attr);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error were thrown");
+  } Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This is illegal character!", err->errorMsg);
-    freeError(err);
+    TEST_ASSERT_EQUAL_STRING("Character operator is illegal!", err->errorMsg);    
   }
 }
 
-void test_infixLed_given_Token_of_Infix_symbol_3_should_show_error_msg(void){
-  OperatorToken* subToken = (OperatorToken*)createOperatorToken("3", INFIX);
-  
+/**
+ *  extendIntegerErrorOperator is a function that will throw ERR_ILLEGAL_INTEGER
+ *  when an operator type token that have any digit symbol is detected.
+ *
+ */
+void test_extendIntegerErrorOperator_should_always_throw_ERR_ILLEGAL_INTEGER(void){
+  OperatorToken* testToken  = (OperatorToken*)createOperatorToken("76", INFIX);
+
   Try{
-    subToken =  (OperatorToken*)infixLed((Token*)subToken);
-    TEST_FAIL_MESSAGE("Expecting ERR_UNEXPECTED_INTEGER but none thrown.");
-  }Catch(err){
+    Attributes attr = tokenTypeAttributesTable[testToken->type];
+    testToken = (OperatorToken*)attr.extend((Token*)testToken, &attr);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error were thrown");
+  } Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNEXPECTED_INTEGER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Integer unexpected to be here!",  err->errorMsg);
-    freeError(err);
+    TEST_ASSERT_EQUAL_STRING("Integer operator is illegal!", err->errorMsg);    
   }
 }
-
 
 
 
