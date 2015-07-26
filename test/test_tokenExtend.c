@@ -109,6 +109,30 @@ void test_extendDoubleCharacterOperator_given_MUL_ADD_and_Table_should_throw_ERR
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
   }
 }
+
+
+/**
+ *  The extendDoubleCharacterOperator function will assign attribute to operator
+ *  can be two different operator function.
+ *  
+ *	Operator '*' can only be extended as '*' & '*='.  
+ *  So given the token '*=+', extendDoubleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendDoubleCharacterOperator_given_MUL_EQUAL_and_ADD_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* opr  = (OperatorToken*)createOperatorToken("*=+", INFIX);
+  int thisSymbol      = *opr->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    opr = (OperatorToken*)oprAttr.extend((Token*)opr, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+  }
+}
+
 /**
  *  The extendTripleCharacterOperator function will assign attribute to operator
  *  can be 3 different operator function.
@@ -138,6 +162,31 @@ void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PR
   TEST_ASSERT_EQUAL(PREFIX, incr->arity);
   TEST_ASSERT_EQUAL(70, incr->bindingPower);
 }
+
+/**
+ *  The extendTripleCharacterOperator function will assign attribute to operator
+ *  can be 3 different operator function.
+ *  
+ *  Example,
+ *    extendTriple differentiate '++' from '+' and '+='
+ *	
+ *  Given the token '+/', extendTripleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendTripleCharacterOperator_given_ADD_DIV_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* opr = (OperatorToken*)createOperatorToken("+/", INFIX);
+  int thisSymbol      = *opr->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    opr = (OperatorToken*)oprAttr.extend((Token*)opr, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+  }
+}
+
 /**
  *  The extendTripleCharacterOperator function will assign attribute to operator
  *  can be 3 different operator function.
@@ -145,7 +194,7 @@ void test_extendTripleCharacterOperator_given_INCR_and_Table_should_assign_70_PR
  *  Given the token '++^', extendTripleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
  *
  */
-void test_extendTripleCharacterOperator_given_INCR_XOR_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
+void test_extendTripleCharacterOperator_given_INCR_XOR_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* incr = (OperatorToken*)createOperatorToken("++^", INFIX);
   int thisSymbol      = *incr->symbol;
   Attributes oprAttr  = operatorAttributesTable[thisSymbol];
@@ -158,6 +207,7 @@ void test_extendTripleCharacterOperator_given_INCR_XOR_and_Table_should_throw_ER
     TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
   }
 }
+
 /**
  *  The extendQuadrupleCharacterOperator function will assign attribute to operator
  *  can be 4 different operator function.
@@ -188,6 +238,31 @@ void test_extendQuadrupleCharacterOperator_given_ROTATE_and_Table_should_assign_
   TEST_ASSERT_EQUAL(INFIX, rotate->arity);
   TEST_ASSERT_EQUAL(40, rotate->bindingPower);
 }
+
+/**
+ *  The extendQuadrupleCharacterOperator function will assign attribute to operator
+ *  can be 4 different operator function.
+ *
+ *	Example,
+ *		extendQuadruple differentiate '>>' from '>', '>>=' and '>='
+ *  
+ *  Therefore, given the token '>+', extendQuadrupleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendQuadrupleCharacterOperator_given_LARGER_ADD_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* larger = (OperatorToken*)createOperatorToken(">+", INFIX);
+  int thisSymbol      = *larger->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    larger = (OperatorToken*)oprAttr.extend((Token*)larger, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+  }
+}
+
 /**
  *  The extendQuadrupleCharacterOperator function will assign attribute to operator
  *  can be 4 different operator function.
