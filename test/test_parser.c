@@ -27,6 +27,7 @@ void setUp(void){}
 
 void tearDown(void){}
   
+  
 /**
  *
  *  Obtain tokens of 2 , + , 3
@@ -58,6 +59,52 @@ void test_parser_with_2_ADD_3_EOT_should_return_2_ADD_3(void){
   TEST_ASSERT_NOT_NULL(testToken);
   TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX),createIntegerToken(2),createIntegerToken(3),(OperatorToken*)testToken);
 }
+
+/**
+ *
+ *  Obtain tokens of 2 , + , 3 , - , 4
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '+' can link to another OperatorToken ('-' in this case)
+ *
+ *
+ *     (-)
+ *     / \
+ *   (+) (4)
+ *   / \
+ * (2) (3)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
+  IntegerToken* testIntToken_1    = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken_1   = (OperatorToken*)createOperatorToken("+",INFIX);
+  
+  IntegerToken* testIntToken_2    = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* testOprToken_2   = (OperatorToken*)createOperatorToken("-",INFIX);
+  
+  IntegerToken* lastIntToken      = (IntegerToken*)createIntegerToken(4);
+  OperatorToken* lastOprToken     = (OperatorToken*)createOperatorToken("$",POSTFIX);
+
+//MOCK peepToken and getToken
+  bindingPowerStrongerThanPreviousToken(testOprToken_1, testIntToken_1);    //In parser(0), formed (2 + parser(20))
+  bindingPowerWeakerThanPreviousToken(testOprToken_2, testIntToken_2);    	//In parser(20), RETURN to parser(0)  and completed (2 + 3)
+  
+  peepToken_ExpectAndReturn((Token*)testOprToken_2);                      //In parser(20), peep '-' to check for EOT and RETURN to parser(0)
+  getToken_ExpectAndReturn((Token*)testOprToken_2);                      //In parser(0), peep '-' to check for EOT 
+  bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);         //In parser(20), RETURN to parser(0) and completed [(2 + 3) - 4]
+  peepToken_ExpectAndReturn(lastOprToken);
+  
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createIntegerToken(4), (OperatorToken*)testToken);
+  add = (OperatorToken*)((OperatorToken*)testToken)->token[1];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
+}
+
 
 /**
  *

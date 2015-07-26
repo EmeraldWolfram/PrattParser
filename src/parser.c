@@ -10,6 +10,10 @@
 extern Attributes operatorAttributesTable[];
 extern Attributes tokenTypeAttributesTable[];
 
+/****************************************************************************************
+ * 	This is the main function of the Pratt Parser.
+ *  
+ */
 Token* parser(int prevBindingPower){
   Token* nextToken            = malloc(sizeof(Token));
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
