@@ -49,12 +49,8 @@ void test_parser_with_2_ADD_3_EOT_should_return_2_ADD_3(void){
   OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
 
 //MOCK peepToken and getToken
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);
-  getToken_ExpectAndReturn((Token*)testOprToken);
-  getToken_ExpectAndReturn((Token*)testIntToken);
-  peepToken_ExpectAndReturn((Token*)testOprToken);  
-  
+  bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //In parser(0), formed (2 + parser(20))
+  bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);      //In parser(20), RETURN to parser(0) and completed (2 + 3)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT (End of Token) and RETURN Token Tree
  
   Token* testToken = malloc(sizeof(Token*));
