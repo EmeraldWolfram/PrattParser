@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//
 Attributes operatorAttributesTable[] = {
   ['<'] = {30, INFIX,  errorNud, infixLed, extendQuadrupleCharacterOperator},
   ['>'] = {30, INFIX,  errorNud, infixLed, extendQuadrupleCharacterOperator},
