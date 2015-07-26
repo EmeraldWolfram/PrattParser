@@ -93,16 +93,16 @@ void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
   peepToken_ExpectAndReturn((Token*)testOprToken_2);                      //In parser(20), peep '-' to check for EOT and RETURN to parser(0)
   getToken_ExpectAndReturn((Token*)testOprToken_2);                      //In parser(0), peep '-' to check for EOT 
   bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);         //In parser(20), RETURN to parser(0) and completed [(2 + 3) - 4]
-  peepToken_ExpectAndReturn(lastOprToken);
+  peepToken_ExpectAndReturn((Token*)lastOprToken);
   
   Token* testToken = malloc(sizeof(Token*));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
   
-  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createIntegerToken(4), (OperatorToken*)testToken);
-  add = (OperatorToken*)((OperatorToken*)testToken)->token[1];
-  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
+  TEST_ASSERT_EQUAL_TOKEN_TREE((Token*)createOperatorToken("-",INFIX), createOperatorToken("+",INFIX), createIntegerToken(4), (OperatorToken*)testToken);
+  add = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  TEST_ASSERT_EQUAL_TOKEN_TREE((Token*)createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
 }
 
 
