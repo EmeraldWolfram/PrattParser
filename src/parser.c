@@ -70,13 +70,11 @@ Token* parser(int prevBindingPower){
   attr          = &tokenTypeAttributesTable[nextToken->type];
   nextOprToken  = (OperatorToken*)attr->extend(nextToken, attr);
   nextOprToken  = (OperatorToken*)nextToken->led((Token*)nextOprToken);
-  
-  
+
  /***************************************************************************************
   *   When the precedence of the operator is larger than previous operator              *
   *   this command will link down to the next operator.                                 *
-  ***************************************************************************************/   
-  
+  ***************************************************************************************/
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
@@ -99,6 +97,8 @@ Token* parser(int prevBindingPower){
     if(strcmp(currentToken->symbol, ")") == 0 \
     || strcmp(currentToken->symbol, "]") == 0){
       currentToken = (OperatorToken*)getToken();
+      if(prevBindingPower == 1)
+        return (Token*)nextOprToken;
     }
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
@@ -107,8 +107,6 @@ Token* parser(int prevBindingPower){
       nextOprToken = currentToken;
     }
   }while(strcmp(currentToken->symbol, "$") != 0 \
-      && strcmp(currentToken->symbol, ")") != 0 \
-      && strcmp(currentToken->symbol, "]") != 0 \
       && prevBindingPower == 0);
   return (Token*)nextOprToken;
 }
