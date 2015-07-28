@@ -11,25 +11,70 @@ extern Attributes operatorAttributesTable[];
 extern Attributes tokenTypeAttributesTable[];
 
 /****************************************************************************************
- * 	This is the main function of the Pratt Parser.
- *  
- */
+ * 	This is the main function of the Pratt Parser.                                      *
+ *  when an equation passed in,                                                         *
+ *  the parser will check the equation from the left                                    *
+ *  and link up a token tree according to the operator precedence.                      *
+ *                                                                                      *
+ *  example1: precedence of multiply(*) is higher than add(+),                          *
+ *           so when an equation "2 + 3 * 4" entered to the parser,                     *
+ *            it will link (3 * 4) and form a brunch,                                   *
+ *            then parser will link the brunch to integer "2" by (+)                    *
+ *            last, it will form a tree as shown below.                                 *
+ *            This is an example of LINK DOWN.                                          *
+ *                                                                                      *
+ *                    (+)                                                               *
+ *                    / \                                                               *
+ *                  (2) (*)                                                             *
+ *                      / \                                                             *
+ *                    (3) (4)                                                           *
+ *                                                                                      *                                                                                       *
+ *  example2: precedence of sub(-) is smaller than multiply(*),                         *
+ *           so when an equation "2 * 3 - 4" entered to the parser,                     *
+ *            it will link (2 * 3) and form a brunch,                                   *
+ *            then parser will link the brunch to integer "2" by (-)                    *
+ *            last, it will form a tree as shown below.                                 *
+ *            This is an example of LINK UP.                                            *
+ *                                                                                      *
+ *                    (-)                                                               *
+ *                    / \                                                               *
+ *                  (*) (4)                                                             *
+ *                  / \                                                                 *
+ *                (2) (3)                                                               *
+ *                                                                                      *
+ ****************************************************************************************/
 Token* parser(int prevBindingPower){
+ /***************************************************************************************
+  *  These command allocated memory for the function to work.                           *
+ ****************************************************************************************/
   Token* nextToken            = malloc(sizeof(Token));
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
   OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   OperatorToken* currentToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   Attributes* attr            = malloc(sizeof(Attributes));
-  
+ 
+
+ /***************************************************************************************
+  *  These command assigned attributes to expression for further usage in the function. *
+  ***************************************************************************************/ 
   nextToken     = getToken();
   attr          = &tokenTypeAttributesTable[nextToken->type];
   nextIntToken  = (IntegerToken*)attr->extend(nextToken, attr);
   nextIntToken  = (IntegerToken*)nextToken->nud((Token*)nextIntToken);
   
+  
+ /***************************************************************************************
+  *  These command assigned attributes to operations for further usage in the function. *
+  ***************************************************************************************/ 
   nextToken     = peepToken();
   attr          = &tokenTypeAttributesTable[nextToken->type];
   nextOprToken  = (OperatorToken*)attr->extend(nextToken, attr);
   nextOprToken  = (OperatorToken*)nextToken->led((Token*)nextOprToken);
+
+ /***************************************************************************************
+  *   When the precedence of the operator is larger than previous operator              *
+  *   this command will link down to the next operator.                                 *
+  ***************************************************************************************/
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
     nextOprToken->token[0] = (Token*)nextIntToken;
@@ -39,6 +84,11 @@ Token* parser(int prevBindingPower){
   else
     return (Token*)nextIntToken;
   
+  
+ /***************************************************************************************
+  *   When the precedence of the operator is smaller than previous operator              *
+  *   this command will link up to the next operator.                                 *
+  ***************************************************************************************/  
   do{
     currentToken = (OperatorToken*)peepToken();
     attr         = &tokenTypeAttributesTable[currentToken->type];
