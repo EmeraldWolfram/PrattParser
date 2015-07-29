@@ -65,7 +65,7 @@ void test_parser_with_2_ADD_3_EOT_should_return_2_ADD_3(void){
   
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -88,7 +88,7 @@ void test_parser_with_2_ADD_3_EOT_should_return_2_ADD_3(void){
  *
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
-void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
+void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_2_ADD_3_then_SUB_4(void){
   Token* table[] = {
     createIntegerToken(2),
     createOperatorToken("+",INFIX),
@@ -100,7 +100,7 @@ void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
   };
   initTokenizer(table);
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -140,7 +140,7 @@ void test_parser_with_2_ADD_3_MUL_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
   initTokenizer(table);
 
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -184,7 +184,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT_should_return_Token_Tree_SUB_5(voi
   };
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -243,7 +243,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT_should_return_Token_Tr
   };
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -283,7 +283,7 @@ void test_parser_with_minus_3_EOT_should_return_SUB_3(void){
   };
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -314,7 +314,7 @@ void test_parser_with_NOT_3_EOT_should_change_INFIX_NOT_to_PREFIX_NOT(void){
   };
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -348,7 +348,7 @@ void test_parser_with_minus_minus_3_EOT_should_change_return_neg_neg_3(void){
   };
   initTokenizer(table);
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -386,7 +386,7 @@ void test_parser_with_minus_3_MUL_minus_4_EOT_should_return_token_NEG_3_ADD_POS_
   };
   initTokenizer(table);
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -420,7 +420,7 @@ void test_parser_with_2_INCREMENT_EOT_should_return_INCREMENT_2(void){
   };
   initTokenizer(table);
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -451,7 +451,7 @@ void test_parser_with_2_INCREMENT_EOT_should_change_INFIX_to_POSTFIX(void){
   };
   initTokenizer(table);
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -486,7 +486,7 @@ void test_parser_with_2_INCREMENT_INCREMENT_EOT_should_return_2_inc_inc(void){
   };
   initTokenizer(table);
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -533,7 +533,7 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
   initTokenizer(table);
      
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -561,7 +561,7 @@ void test_parser_with_2_64_3_EOT_to_throw_ERR_ILLEGAL_INTEGER(void){
   initTokenizer(table);
           
   Try{
-    Token* testToken = malloc(sizeof(Token*));  
+    Token* testToken = malloc(sizeof(Token));  
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error thrown!");
   }Catch(err){
@@ -586,7 +586,7 @@ void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
   initTokenizer(table);
           
   Try{
-    Token* testToken = malloc(sizeof(Token*));  
+    Token* testToken = malloc(sizeof(Token));  
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
   }Catch(err){
@@ -628,7 +628,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MU
   };
   initTokenizer(table);
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -670,7 +670,7 @@ void test_parser_with_2_OPEN_3_MUL_4_CLOSE_EOT_should_return_3_MUL_4_then_OPEN_2
   };
   initTokenizer(table);
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 // ********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -702,7 +702,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_EXPRE
   initTokenizer(table);
 
   Try{
-    Token* testToken = malloc(sizeof(Token*));
+    Token* testToken = malloc(sizeof(Token));
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error thrown!");
   }Catch(err){
@@ -744,7 +744,7 @@ void test_parser_with_2_ADD_3_CLOSEBRACKET_MUL_4_EOT_should_return_3_CLOSEBRACKE
   };
   initTokenizer(table);  
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -787,7 +787,7 @@ void test_parser_with_OPEN_2_ADD_3_DIV_4_EOT_should_return_OPEN_3_DIV_4_then_ADD
   };
   initTokenizer(table);
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 
 // ********************************************* START TEST ************************************************************* 

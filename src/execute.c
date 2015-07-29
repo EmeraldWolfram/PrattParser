@@ -44,7 +44,19 @@ char* executeExpression(Token* token){
   executeToken = token;
   int i;
 
-  i = sprintf(myString, "%d", ((IntegerToken*)executeToken)->value);
-
+  switch(token->type){
+    case TOKEN_INTEGER_TYPE:
+      i = sprintf(myString, "%d", ((IntegerToken*)executeToken)->value);
+      break;
+    case TOKEN_FLOAT_TYPE:
+      i = sprintf(myString, "%f", ((IntegerToken*)executeToken)->value);
+      break;
+    case TOKEN_STRING_TYPE:
+      i = sprintf(myString, "%s", ((StringToken*)executeToken)->name);
+      break;
+    case TOKEN_IDENTIFIER_TYPE:
+      i = sprintf(myString, "%s", ((IdentifierToken*)executeToken)->name);
+      break;
+  }
   return myString;
 }
