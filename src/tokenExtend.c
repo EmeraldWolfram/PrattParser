@@ -91,7 +91,7 @@ Token* expressionNud(Token* myself){
  */
 Token* errorNud(Token* myself){
   assert(myself != NULL);
-  ThrowError("This is an illegal prefix!", ERR_ILLEGAL_PREFIX);
+  ThrowError(ERR_ILLEGAL_PREFIX, "ERROR: '%s' is an illegal prefix!", ((OperatorToken*)myself)->symbol);
   return myself;
 }
 
@@ -113,7 +113,7 @@ Token* infixLed(Token* myself){
  */
 Token* errorLed(Token* myself){
   assert(myself != NULL);
-  ThrowError("Expected operator token but obtained expression!", ERR_UNEXPECTED_EXPRESSION);
+  ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained expression!");
   return myself;
 }
 
@@ -130,7 +130,7 @@ Token* extendSingleCharacterOperator(Token* thisOpr, Attributes *attr){
     ((OperatorToken*)thisOpr)->led           = attr->led;
   }
   else
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);  //Throw error such as "~X", where X can be any character
+    ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);  //Throw error such as "~X", where X can be any character
   return thisOpr;
 }
 
@@ -154,10 +154,10 @@ Token* extendDoubleCharacterOperator(Token *thisOpr, Attributes *attr){
       ((OperatorToken*)thisOpr)->arity         = INFIX;
     }
     else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //Throw error such as "*=X" detected, where X can be any character
+      ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol); //Throw error such as "*=X" detected, where X can be any character
   }
   else
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR); //Throw error when "*X" detected, where X can be any character
+    ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol); //Throw error when "*X" detected, where X can be any character
   
   if(strcmp(((OperatorToken*)thisOpr)->symbol, "==") == 0)
     ((OperatorToken*)thisOpr)->bindingPower = 20;  
@@ -181,18 +181,18 @@ Token* extendTripleCharacterOperator(Token *thisOpr, Attributes *attr){
       ((OperatorToken*)thisOpr)->arity        = INFIX;
     }
     else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when "+=X" detected, where X can be any character
+      ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);      //Throw error when "+=X" detected, where X can be any character
   }
   else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0]){
     if(((OperatorToken*)thisOpr)->symbol[2] == 0)
       ((OperatorToken*)thisOpr)->bindingPower = 70;
     else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when "++X" detected, where X can be any character
+      ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);      //Throw error when "++X" detected, where X can be any character
   }
   else if(((OperatorToken*)thisOpr)->symbol[1] == 0)
     ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
   else
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when "+X" detected, where X can be any character other than '=' or itself
+    ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);        //Throw error when "+X" detected, where X can be any character other than '=' or itself
    
   if(strcmp(((OperatorToken*)thisOpr)->symbol, "&&") == 0){
     ((OperatorToken*)thisOpr)->bindingPower = 7;
@@ -222,7 +222,7 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, Attributes *attr){
       if(((OperatorToken*)thisOpr)->symbol[2] == 0)
         ((OperatorToken*)thisOpr)->bindingPower = attr->bindingPower;
       else
-        ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when ">=X" detected, where X can be any character
+        ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!",  ((OperatorToken*)thisOpr)->symbol);        //Throw error when ">=X" detected, where X can be any character
     }
     else if(((OperatorToken*)thisOpr)->symbol[1] == ((OperatorToken*)thisOpr)->symbol[0]){
       if(((OperatorToken*)thisOpr)->symbol[2] == 0)
@@ -231,13 +231,13 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, Attributes *attr){
         if(((OperatorToken*)thisOpr)->symbol[3] == 0)
           ((OperatorToken*)thisOpr)->bindingPower = 5;
         else
-          ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);      //Throw error when ">>=X" detected, where X can be any character
+          ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);      //Throw error when ">>=X" detected, where X can be any character
       }
       else
-        ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);        //Throw error when ">>X" detected, where X can be any character except '='
+        ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);        //Throw error when ">>X" detected, where X can be any character except '='
     }
     else
-      ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);          //Throw error when ">X" detected, where X can be any character except '=' and itself
+      ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);          //Throw error when ">X" detected, where X can be any character except '=' and itself
     return thisOpr;
 }
 
@@ -249,7 +249,7 @@ Token* extendQuadrupleCharacterOperator(Token *thisOpr, Attributes *attr){
  */
 Token* extendExpression(Token *thisExpression, Attributes *attr){
   if(thisExpression->type == TOKEN_UNKNOWN_TYPE)
-    ThrowError("Can't resolve Unknown type token!", ERR_UNKNOWN_TOKEN);
+    ThrowError(ERR_UNKNOWN_TOKEN, "Can't resolve Unknown type token!");
   else if(thisExpression->type == TOKEN_OPERATOR_TYPE){
     int thisSymbol  = *(char*)((OperatorToken*)thisExpression)->symbol;
     attr            = &operatorAttributesTable[thisSymbol];
@@ -266,21 +266,21 @@ Token* extendExpression(Token *thisExpression, Attributes *attr){
  *	errorCode: ERR_ILLEGAL_CHARACTER and errorMsg:"Character operator is illegal!"  will be throw.
  */
 Token* extendCharacterErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("Character operator is illegal!", ERR_ILLEGAL_CHARACTER);
+  ThrowError(ERR_ILLEGAL_CHARACTER, "Character operator '%s' is illegal!", ((OperatorToken*)thisOpr)->symbol);
 }
 
 /*	If the operatorToken is a undefined operator,
  *	errorCode: ERR_UNDEFINED_OPERATOR and errorMsg:"This operator is undefined!"  will be throw.
  */
 Token* extendErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+  ThrowError(ERR_UNDEFINED_OPERATOR, "This operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);
 }
 
 /*	If the operatorToken is an integer,
  *	errorCode: ERR_ILLEGAL_INTEGER and errorMsg:"Integer operator is illegal!"  will be throw.
  */
 Token* extendIntegerErrorOperator(Token *thisOpr, Attributes *attr){
-  ThrowError("Integer operator is illegal!", ERR_ILLEGAL_INTEGER);
+  ThrowError(ERR_ILLEGAL_INTEGER, "Integer operator '%s' is illegal!", ((OperatorToken*)thisOpr)->symbol);
 }
 
 
