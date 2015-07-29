@@ -38,6 +38,7 @@ struct Token_t{
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+  char* (*execute)(Token *token);
   char* str;
 };
 
@@ -47,6 +48,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+  char* (*execute)(Token *token);
   char* str;
   int value;
 } IntegerToken;
@@ -57,6 +59,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+  char* (*execute)(Token *token);
   char* str;
   double value;
 } FloatToken;
@@ -67,6 +70,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+  char* (*execute)(Token *token);
   char* str;
   char *name;
   Token* token;
@@ -78,6 +82,7 @@ typedef struct {
   uint32_t length;
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
+  char* (*execute)(Token *token);
   char* str;
   char *symbol;
   int bindingPower;
