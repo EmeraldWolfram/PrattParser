@@ -1,5 +1,6 @@
 #include "tokenExtend.h"
 #include "Token.h"
+#include "execute.h"
 #include "ErrorObject.h"
 #include "CException.h"
 #include "parser.h"
@@ -10,49 +11,49 @@
 
 //this table defined the details of the operator token. 
 Attributes operatorAttributesTable[] = {
-  ['<'] = 		    {30,	INFIX,  errorNud,  infixLed, extendQuadrupleCharacterOperator},
-  ['>'] = 		    {30,  INFIX,  errorNud,  infixLed, extendQuadrupleCharacterOperator},
-  ['+'] =		      {50,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
-  ['-'] = 		    {50,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
-  ['&'] = 		    {10,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator},
-  ['|'] = 		    { 8,  INFIX,  errorNud,  infixLed, extendTripleCharacterOperator},
-  ['*'] = 		    {60,  PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator},
-  ['/'] = 		    {60,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
-  ['%'] = 		    {60,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
-  ['^'] = 		    { 9,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
-  ['!'] = 		    {70,  PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator},
-  ['='] = 		    { 5,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator},
-  ['~'] = 		    {70,  PREFIX, prefixNud, errorLed, extendSingleCharacterOperator},
-  ['('] = 		    { 1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
-  [')'] = 		    { 0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
-  ['['] = 		    { 1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator},
-  [']'] = 		    { 0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator},
-  ['$'] = 		    { 0,  NOFIX,  errorNud,  infixLed, extendSingleCharacterOperator},
-  ['#'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['{'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['}'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['@'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['?'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['.'] = 	 	    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  [','] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  [';'] =	 	      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['"'] =  		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['\'']=         { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['`'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['\\']= 	  	  { 1,	NOFIX,  errorNud,  errorLed, extendErrorOperator},
-  ['a' ... 'z'] = { 1,	NOFIX, 	errorNud,  errorLed, extendCharacterErrorOperator},
-  ['A' ... 'Z'] = { 1,	NOFIX,	errorNud,  errorLed, extendCharacterErrorOperator},
-  [48  ...  57] = { 1,	NOFIX,  errorNud,  errorLed, extendIntegerErrorOperator}
+  ['<'] = 		    {30,	INFIX,  errorNud,  infixLed, extendQuadrupleCharacterOperator, executeDouble},
+  ['>'] = 		    {30,  INFIX,  errorNud,  infixLed, extendQuadrupleCharacterOperator, executeDouble},
+  ['+'] =		      {50,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator, executeSingle},
+  ['-'] = 		    {50,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator, executeSingle},
+  ['&'] = 		    {10,  PREFIX, prefixNud, infixLed, extendTripleCharacterOperator, executeSingle},
+  ['|'] = 		    { 8,  INFIX,  errorNud,  infixLed, extendTripleCharacterOperator, executeDouble},
+  ['*'] = 		    {60,  PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator, executeSingle},
+  ['/'] = 		    {60,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator, executeDouble},
+  ['%'] = 		    {60,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator, executeDouble},
+  ['^'] = 		    { 9,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator, executeDouble},
+  ['!'] = 		    {70,  PREFIX, prefixNud, infixLed, extendDoubleCharacterOperator, executeSingle},
+  ['='] = 		    { 5,  INFIX,  errorNud,  infixLed, extendDoubleCharacterOperator, executeDouble},
+  ['~'] = 		    {70,  PREFIX, prefixNud, errorLed, extendSingleCharacterOperator, executeSingle},
+  ['('] = 		    { 1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator, executeSingle},
+  [')'] = 		    { 0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator, executeDouble},
+  ['['] = 		    { 1,  PREFIX, prefixNud, infixLed, extendSingleCharacterOperator, executeSingle},
+  [']'] = 		    { 0,  NOFIX,  prefixNud, infixLed, extendSingleCharacterOperator, executeDouble},
+  ['$'] = 		    { 0,  NOFIX,  errorNud,  infixLed, extendSingleCharacterOperator, executeDouble},
+  ['#'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['{'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['}'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['@'] = 		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['?'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['.'] = 	 	    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  [','] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  [';'] =	 	      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['"'] =  		    { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['\'']=         { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['`'] =		      { 1,  NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['\\']= 	  	  { 1,	NOFIX,  errorNud,  errorLed, extendErrorOperator, executeDouble},
+  ['a' ... 'z'] = { 1,	NOFIX, 	errorNud,  errorLed, extendCharacterErrorOperator, executeDouble},
+  ['A' ... 'Z'] = { 1,	NOFIX,	errorNud,  errorLed, extendCharacterErrorOperator, executeDouble},
+  [48  ...  57] = { 1,	NOFIX,  errorNud,  errorLed, extendIntegerErrorOperator, executeDouble}
 };
 
 //this table defined the details of the token types. 
 Attributes  tokenTypeAttributesTable[] = {
-  [TOKEN_OPERATOR_TYPE]   = {0, NOFIX, prefixNud, infixLed, extendExpression},
-  [TOKEN_UNKNOWN_TYPE]    = {0, NOFIX, errorNud,  errorLed, extendExpression},
-  [TOKEN_INTEGER_TYPE]    = {0, NOFIX, expressionNud, errorLed, extendExpression},
-  [TOKEN_FLOAT_TYPE]      = {0, NOFIX, expressionNud, errorLed, extendExpression},
-  [TOKEN_STRING_TYPE]     = {0, NOFIX, expressionNud, errorLed, extendExpression},
-  [TOKEN_IDENTIFIER_TYPE] = {0, NOFIX, expressionNud, errorLed, extendExpression}
+  [TOKEN_OPERATOR_TYPE]   = {0, NOFIX, prefixNud, infixLed, extendExpression, executeDouble},
+  [TOKEN_UNKNOWN_TYPE]    = {0, NOFIX, errorNud,  errorLed, extendExpression, executeExpression},
+  [TOKEN_INTEGER_TYPE]    = {0, NOFIX, expressionNud, errorLed, extendExpression, executeExpression},
+  [TOKEN_FLOAT_TYPE]      = {0, NOFIX, expressionNud, errorLed, extendExpression, executeExpression},
+  [TOKEN_STRING_TYPE]     = {0, NOFIX, expressionNud, errorLed, extendExpression, executeExpression},
+  [TOKEN_IDENTIFIER_TYPE] = {0, NOFIX, expressionNud, errorLed, extendExpression, executeExpression}
 };
 
 /*Function of prefixNud is to grab the operator token.
@@ -61,12 +62,13 @@ Attributes  tokenTypeAttributesTable[] = {
  */
 Token* prefixNud(Token* myself){
   assert(myself != NULL);
+  myself->execute   = executeSingle;
   if(strcmp(((OperatorToken*)myself)->symbol,"(") != 0 \
   && strcmp(((OperatorToken*)myself)->symbol,"[") != 0)
     ((OperatorToken*)myself)->token[0] = parser(100);
-  else
+  else{
     ((OperatorToken*)myself)->token[0] = parser(1);
-  
+  }
   return myself;
 }
 
@@ -80,6 +82,7 @@ Token* prefixNud(Token* myself){
  */
 Token* expressionNud(Token* myself){
   assert(myself != NULL);
+  myself->execute = executeExpression;
   return myself;
 }
 
@@ -98,12 +101,16 @@ Token* errorNud(Token* myself){
 // infixLed will assign INFIX or POSTFIX to the arity of OperatorToken.
 Token* infixLed(Token* myself){
   assert(myself != NULL);
-  if(strcmp(((OperatorToken*)myself)->symbol,"++") == 0 \
-  || strcmp(((OperatorToken*)myself)->symbol,"--") == 0)
-    ((OperatorToken*)myself)->arity = POSTFIX;
-  else
-    ((OperatorToken*)myself)->arity = INFIX;
   
+  if(strcmp(((OperatorToken*)myself)->symbol,"++") == 0 \
+  || strcmp(((OperatorToken*)myself)->symbol,"--") == 0){
+    ((OperatorToken*)myself)->arity = POSTFIX;
+    myself->execute = executeSingle;
+  }
+  else{
+    ((OperatorToken*)myself)->arity = INFIX;
+    myself->execute = executeDouble;
+  }  
   return myself;
 }
 
@@ -113,7 +120,16 @@ Token* infixLed(Token* myself){
  */
 Token* errorLed(Token* myself){
   assert(myself != NULL);
-  ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained expression!");
+  switch(myself->type){
+    case TOKEN_INTEGER_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained integer %d!", ((IntegerToken*)myself)->value);
+    case TOKEN_FLOAT_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained float %f!", ((FloatToken*)myself)->value);
+    case TOKEN_STRING_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained string %s!", ((StringToken*)myself)->name);
+    case TOKEN_IDENTIFIER_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained identifier %s!", ((StringToken*)myself)->name);
+  }
   return myself;
 }
 
@@ -128,6 +144,7 @@ Token* extendSingleCharacterOperator(Token* thisOpr, Attributes *attr){
     ((OperatorToken*)thisOpr)->arity         = attr->arity;
     ((OperatorToken*)thisOpr)->nud           = attr->nud;
     ((OperatorToken*)thisOpr)->led           = attr->led;
+    ((OperatorToken*)thisOpr)->execute       = attr->execute;
   }
   else
     ThrowError(ERR_UNDEFINED_OPERATOR, "ERROR: Operator '%s' is undefined!", ((OperatorToken*)thisOpr)->symbol);  //Throw error such as "~X", where X can be any character
@@ -143,7 +160,8 @@ Token* extendSingleCharacterOperator(Token* thisOpr, Attributes *attr){
 Token* extendDoubleCharacterOperator(Token *thisOpr, Attributes *attr){ 
   ((OperatorToken*)thisOpr)->nud           = attr->nud;
   ((OperatorToken*)thisOpr)->led           = attr->led;
-    
+  ((OperatorToken*)thisOpr)->execute       = attr->execute;
+  
   if(((OperatorToken*)thisOpr)->symbol[1] == 0){
     ((OperatorToken*)thisOpr)->bindingPower  = attr->bindingPower;
     ((OperatorToken*)thisOpr)->arity         = attr->arity;

@@ -2,6 +2,7 @@
 #define tokenExtend_H
 #include "Token.h"
 #include "ErrorObject.h"
+#include "execute.h"
 #include "CException.h"
 #include <stdint.h>
 
@@ -12,6 +13,7 @@ struct Attributes_t{
   Token* (*nud)(Token*);
   Token* (*led)(Token*);
   Token* (*extend)(Token *token, Attributes *attributes);
+  char* (*execute)(Token *token);
 };
 
 Token* extendSingleCharacterOperator(Token *thisOpr, Attributes *attr);
@@ -29,5 +31,6 @@ Token* expressionNud(Token* myself);
 Token* errorNud(Token* myself);
 Token* infixLed(Token* myself);
 Token* errorLed(Token* myself);
+
 
 #endif // tokenExtend_H

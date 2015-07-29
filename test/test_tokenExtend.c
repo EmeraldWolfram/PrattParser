@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "Token.h"
 #include "ErrorObject.h"
+#include "execute.h"
 #include "tokenExtend.h"
 #include "mock_parser.h"
 
@@ -519,7 +520,7 @@ void test_errorNud_should_always_throw_ERR_ILLEGAL_PREFIX(void){
 }
 
 /**
- *  This test use to test the error ERR_ILLEGAL_ is thrown when errorNud is called
+ *  This test use to test the error ERR_UNEXPECTED_EXPRESSION is thrown when errorNud is called
  */
 void test_errorLed_should_always_throw_ERR_UNEXPECTED_EXPRESSION(void){
   Token* testToken  = createIntegerToken(3);
@@ -531,10 +532,9 @@ void test_errorLed_should_always_throw_ERR_UNEXPECTED_EXPRESSION(void){
     TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error were thrown");
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNEXPECTED_EXPRESSION, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained expression!", err->errorMsg);    
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained integer 3!", err->errorMsg);    
   }
   freeError(err);
 }
-
 
 
