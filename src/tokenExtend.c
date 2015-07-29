@@ -113,7 +113,16 @@ Token* infixLed(Token* myself){
  */
 Token* errorLed(Token* myself){
   assert(myself != NULL);
-  ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained expression!");
+  switch(myself->type){
+    case TOKEN_INTEGER_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained integer %d!", ((IntegerToken*)myself)->value);
+    case TOKEN_FLOAT_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained float %f!", ((FloatToken*)myself)->value);
+    case TOKEN_STRING_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained string %s!", ((StringToken*)myself)->name);
+    case TOKEN_IDENTIFIER_TYPE:
+    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained identifier %s!", ((StringToken*)myself)->name);
+  }
   return myself;
 }
 

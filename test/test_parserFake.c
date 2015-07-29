@@ -706,7 +706,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_EXPRE
     TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error thrown!");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNEXPECTED_EXPRESSION, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained expression!",  err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained integer 4!",  err->errorMsg);
     freeError(err);
   }
 }
