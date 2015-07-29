@@ -274,8 +274,9 @@ Token* extendExpression(Token *thisExpression, Attributes *attr){
     thisExpression  = attr->extend(thisExpression, attr);
   }
   else{
-    thisExpression->nud = attr->nud;
-    thisExpression->led = attr->led;
+    thisExpression->execute = attr->execute;
+    thisExpression->nud     = attr->nud;
+    thisExpression->led     = attr->led;
   }
   return thisExpression;
 }

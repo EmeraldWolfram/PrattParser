@@ -9,41 +9,42 @@
 #include <string.h>
 
 char* executeSingle(Token* token){
-  char* mainStr     = malloc(sizeof(char));
-  char* minorStr    = malloc(sizeof(char));
+  // printf("Single get called\n");
+  char* mainStr     = malloc(sizeof(char)*100);
+  char* minorStr    = malloc(sizeof(char)*50);
   Token* minorToken  = ((OperatorToken*)token)->token[0];
   minorStr          = minorToken->execute(minorToken);  
-  sprintf(mainStr, "(%s%s)", ((OperatorToken*)token)->symbol, minorStr);
+  int n;
+  n = sprintf(mainStr, "(%s%s)", ((OperatorToken*)token)->symbol, minorStr);
   return mainStr;
 }
 
 char* executeDouble(Token* token){
-  char* mainStr       = malloc(sizeof(char));
-  char* leftMinorStr  = malloc(sizeof(char));
-  char* rightMinorStr = malloc(sizeof(char));
+  // printf("Double get called\n");
+  char* mainStr       = malloc(sizeof(char)*200);
+  char* leftMinorStr  = malloc(sizeof(char)*50);
+  char* rightMinorStr = malloc(sizeof(char)*50);
+  int n;
+  Token* leftMinorToken   = malloc(sizeof(Token));
+  leftMinorToken  = ((OperatorToken*)token)->token[0];
+  Token* rightMinorToken  = malloc(sizeof(Token));
+  rightMinorToken = ((OperatorToken*)token)->token[1];
   
-  Token* leftMinorToken   = ((OperatorToken*)token)->token[0];
-  Token* rightMinorToken  = ((OperatorToken*)token)->token[1];
-  
-  leftMinorStr            = leftMinorToken->execute(leftMinorToken);
-  rightMinorStr           = rightMinorToken->execute(rightMinorToken);
-  
-  sprintf(mainStr, "(%s %s %s)", leftMinorStr, ((OperatorToken*)token)->symbol, rightMinorStr);
-  
+  leftMinorStr    = leftMinorToken->execute(leftMinorToken);
+  rightMinorStr   = rightMinorToken->execute(rightMinorToken);
+  n = sprintf(mainStr, "(%s %s %s)", leftMinorStr, ((OperatorToken*)token)->symbol, rightMinorStr);
+
   return mainStr;
 }
 
 char* executeExpression(Token* token){
-  char* myString = malloc(sizeof(char));
-  switch(token->type){
-    case TOKEN_INTEGER_TYPE:
-      sprintf(myString, "%d", ((IntegerToken*)token)->value);
-    case TOKEN_FLOAT_TYPE:
-      sprintf(myString, "%f", ((FloatToken*)token)->value);
-    case TOKEN_STRING_TYPE:
-      sprintf(myString, "%s", ((StringToken*)token)->name);
-    case TOKEN_IDENTIFIER_TYPE:
-      sprintf(myString, "%s", ((StringToken*)token)->name);
-  }
+  // printf("Express get called\n");
+  Token* executeToken = malloc(sizeof(StringToken));
+  char* myString      = malloc(sizeof(char)*50);
+  executeToken = token;
+  int i;
+
+  i = sprintf(myString, "%d", ((IntegerToken*)executeToken)->value);
+
   return myString;
 }

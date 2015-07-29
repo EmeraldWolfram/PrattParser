@@ -54,8 +54,7 @@ void test_excecute_given_2_ADD_3_will_return_2ADD3_tree(void){
  
   Token* testToken  = malloc(sizeof(Token*));
   testToken         = parser(0);
-  // char* equation = executeDouble(testToken);
+  char* equation    = testToken->execute(testToken);
   
-  
-  
+  printf("%s",equation);
 }
