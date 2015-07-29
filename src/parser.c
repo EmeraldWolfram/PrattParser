@@ -51,7 +51,6 @@ Token* parser(int prevBindingPower){
   OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   OperatorToken* currentToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
   Attributes* attr            = malloc(sizeof(Attributes));
- 
 
  /***************************************************************************************
   *  These command assigned attributes to EXPRESSION for further usage in the function. *
@@ -60,7 +59,6 @@ Token* parser(int prevBindingPower){
   attr          = &tokenTypeAttributesTable[nextToken->type];
   nextIntToken  = (IntegerToken*)attr->extend(nextToken, attr);
   nextIntToken  = (IntegerToken*)nextToken->nud((Token*)nextIntToken);
-  
   
  /***************************************************************************************
   *  These command assigned attributes to OPERATIONS for further usage in the function. *

@@ -85,6 +85,10 @@ typedef struct {
   Token *token[0];
 } OperatorToken;
 
+typedef struct {
+  Token *currentToken;
+} Tokenizer;
+
 Token *createOperatorToken(char *symbol, Arity AR);
 Token *createIntegerToken(int value);
 
