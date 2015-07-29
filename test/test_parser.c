@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-OperatorToken *multiply, *add, *subtract, *divide, *open;
+OperatorToken *multiply, *add, *subtract, *divide, *open, *increment;
 
 #define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
           getToken_ExpectAndReturn((Token*)testIntToken);                     \
@@ -336,7 +336,7 @@ void test_parser_with_minus_3_EOT_should_return_SUB_3(void){
  *
  *  Note: Symbol "$" was used here to indicate the end of Token
  */
-void test_parser_with_minus_3_EOT_should_change_INFIX_NOT_to_PREFIX_NOT(void){
+void test_parser_with_NOT_3_EOT_should_change_INFIX_NOT_to_PREFIX_NOT(void){
 
   OperatorToken* preOprToken0   = (OperatorToken*)createOperatorToken("!",INFIX);
   IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(3);
@@ -359,9 +359,49 @@ void test_parser_with_minus_3_EOT_should_change_INFIX_NOT_to_PREFIX_NOT(void){
 
 /**
  *
+ *  Obtain tokens of - , - , 3 
+ *  
+ *  This test check whether parser() function can link two consecutive PREFIX operator
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (-)
+ *      /
+ *    (-)
+ *    /
+ *  (3)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_minus_minus_3_EOT_should_change_return_neg_neg_3(void){
+
+  OperatorToken* preOprToken0   = (OperatorToken*)createOperatorToken("-",INFIX);
+  OperatorToken* preOprToken1   = (OperatorToken*)createOperatorToken("-",INFIX);
+  IntegerToken* testIntToken    = (IntegerToken*)createIntegerToken(3);
+  OperatorToken* lastOprToken   = (OperatorToken*)createOperatorToken("$",POSTFIX);
+
+//MOCK peepToken and getToken
+  getToken_ExpectAndReturn((Token*)preOprToken0);                   //In parser(0), formed (- parser(100))
+  getToken_ExpectAndReturn((Token*)preOprToken1);                  //In parser(100), formed (- - #parser(100))
+  bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken);   //In #parser(100), formed (- - 3) and return to parser(100)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                  //In parser(100), peep '$' to check binding power, RETURN to parser(0)
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                  //In parser(0), peep '$' to check binding power and RETURN Token Tree
+ 
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("-",PREFIX), (OperatorToken*)testToken);
+  subtract = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("-",PREFIX), subtract);
+  TEST_ASSERT_EQUAL(3, ((IntegerToken*)subtract->token[0])->value);
+}
+
+/**
+ *
  *  Obtain tokens of - , 3 , * , - , 4
  *  
- *  This test check whether parser() function can link PREFIX to INFIX
+ *  This test check whether parser() function can link two PREFIX tree to a INFIX operator
  *  The parser should linked up and form a token tree as follow
  *
  *      (+)
@@ -469,6 +509,46 @@ void test_parser_with_2_INCREMENT_EOT_should_change_INFIX_to_POSTFIX(void){
   TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("--",POSTFIX),((OperatorToken*)testToken));
   TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
 }
+
+/**
+ *
+ *  Obtain tokens of 2 , ++ , ++
+ *
+ *  This test check whether parser() function can link two consecutive POSTFIX
+ *  The parser should linked up and form a token tree as follow
+ *        
+ *        (++)
+ *        /
+ *      (++)
+ *      /
+ *    (2)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_INCREMENT_INCREMENT_EOT_should_return_2_inc_inc(void){
+  IntegerToken* testIntToken     = (IntegerToken*)createIntegerToken(2);
+  OperatorToken* testOprToken0   = (OperatorToken*)createOperatorToken("++", INFIX);
+  OperatorToken* testOprToken1   = (OperatorToken*)createOperatorToken("++", INFIX);
+  OperatorToken* lastOprToken    = (OperatorToken*)createOperatorToken("$", POSTFIX);
+
+//MOCK peepToken and getToken
+  bindingPowerStrongerThanPreviousToken(testOprToken0, testIntToken);    //In parser(0), formed (2 ++)
+  peepToken_ExpectAndReturn((Token*)testOprToken1);                     
+  getToken_ExpectAndReturn((Token*)testOprToken1);                      
+  peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  increment = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("++",POSTFIX),((OperatorToken*)testToken));
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("++",POSTFIX),increment);
+  TEST_ASSERT_EQUAL(2,((IntegerToken*)increment->token[0])->value);
+}
+
+
 
 /**
  *

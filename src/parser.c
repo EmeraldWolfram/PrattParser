@@ -7,14 +7,13 @@
 #include <stdio.h>
 #include <string.h>
 
-extern Attributes operatorAttributesTable[];
 extern Attributes tokenTypeAttributesTable[];
 
 /****************************************************************************************
  * 	This is the main function of the Pratt Parser.                                      *
  *  when an equation passed in,                                                         *
  *  the parser will check the equation from the left                                    *
- *  and link up a token tree according to the operator precedence.                      *
+ *  and link up a token tree according to the OPERATOR precedence.                      *
  *                                                                                      *
  *  example1: precedence of multiply(*) is higher than add(+),                          *
  *           so when an equation "2 + 3 * 4" entered to the parser,                     *
@@ -46,7 +45,7 @@ extern Attributes tokenTypeAttributesTable[];
 Token* parser(int prevBindingPower){
  /***************************************************************************************
   *  These command allocated memory for the function to work.                           *
- ****************************************************************************************/
+  ***************************************************************************************/
   Token* nextToken            = malloc(sizeof(Token));
   IntegerToken* nextIntToken  = malloc(sizeof(IntegerToken));
   OperatorToken* nextOprToken = malloc(sizeof(OperatorToken) + 2*(sizeof(Token*)));
@@ -55,7 +54,7 @@ Token* parser(int prevBindingPower){
  
 
  /***************************************************************************************
-  *  These command assigned attributes to expression for further usage in the function. *
+  *  These command assigned attributes to EXPRESSION for further usage in the function. *
   ***************************************************************************************/ 
   nextToken     = getToken();
   attr          = &tokenTypeAttributesTable[nextToken->type];
@@ -64,7 +63,7 @@ Token* parser(int prevBindingPower){
   
   
  /***************************************************************************************
-  *  These command assigned attributes to operations for further usage in the function. *
+  *  These command assigned attributes to OPERATIONS for further usage in the function. *
   ***************************************************************************************/ 
   nextToken     = peepToken();
   attr          = &tokenTypeAttributesTable[nextToken->type];
@@ -72,8 +71,8 @@ Token* parser(int prevBindingPower){
   nextOprToken  = (OperatorToken*)nextToken->led((Token*)nextOprToken);
 
  /***************************************************************************************
-  *   When the precedence of the operator is larger than previous operator              *
-  *   this command will link down to the next operator.                                 *
+  *   When the precedence of the OPERATOR is larger than previous OPERATOR              *
+  *   this command will link down to the next OPERATOR.                                 *
   ***************************************************************************************/
   if((nextOprToken->bindingPower)> prevBindingPower){
     nextOprToken = (OperatorToken*)getToken();
@@ -86,8 +85,8 @@ Token* parser(int prevBindingPower){
   
   
  /***************************************************************************************
-  *   When the precedence of the operator is smaller than previous operator              *
-  *   this command will link up to the next operator.                                 *
+  *   When the precedence of the OPERATOR is smaller than previous OPERATOR             *
+  *   this command will link up to the next OPERATOR.                                   *
   ***************************************************************************************/  
   do{
     currentToken = (OperatorToken*)peepToken();
@@ -103,7 +102,8 @@ Token* parser(int prevBindingPower){
     if(currentToken->bindingPower > prevBindingPower){
       currentToken = (OperatorToken*)getToken();
       currentToken->token[0] = (Token*)nextOprToken;
-      currentToken->token[1] = parser(currentToken->bindingPower);
+      if(currentToken->arity != POSTFIX)
+        currentToken->token[1] = parser(currentToken->bindingPower);
       nextOprToken = currentToken;
     }
   }while(strcmp(currentToken->symbol, "$") != 0 \
