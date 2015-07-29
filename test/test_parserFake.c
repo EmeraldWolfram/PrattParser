@@ -13,16 +13,6 @@
 OperatorToken *multiply, *add, *subtract, *divide, *open, *increment;
 ErrorObject *err;
 
-#define bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken)     \
-          getToken_ExpectAndReturn((Token*)testIntToken);                     \
-          peepToken_ExpectAndReturn((Token*)testOprToken);                    \
-          getToken_ExpectAndReturn((Token*)testOprToken);
-
-
-#define bindingPowerWeakerThanPreviousToken(testOprToken, testIntToken)       \
-          getToken_ExpectAndReturn((Token*)testIntToken);                     \
-          peepToken_ExpectAndReturn((Token*)testOprToken);                    
-
 // Global variable(s) used by getToken() and peepToken()
 Token **tokenTable = NULL;
 
@@ -575,7 +565,7 @@ void test_parser_with_2_64_3_EOT_to_throw_ERR_ILLEGAL_INTEGER(void){
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error thrown!");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_INTEGER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Integer operator is illegal!",  err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("Integer operator '64' is illegal!",  err->errorMsg);
     freeError(err);
   }
 }
@@ -600,7 +590,7 @@ void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Character operator is illegal!",  err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("Character operator 'a' is illegal!",  err->errorMsg);
     freeError(err);
   }
 }

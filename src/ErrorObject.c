@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <stdarg.h>
 #include "ErrorObject.h"
 #include "CException.h"
 
@@ -18,10 +19,21 @@
  *        ["This operator is undefined!"]
  *        [   ERR_UNDEFINED_OPERATOR    ]
  */
-void ThrowError(char *message, ErrorCode errCode){
+void ThrowError(ErrorCode errCode, char *message, ...){
   ErrorObject* errObj = malloc(sizeof(ErrorObject));
-  errObj->errorMsg = message;
+  char *messageBuffer;
+  int strLength;
+
+  va_list args;
+  va_start(args, message);
+  strLength     = vsnprintf(messageBuffer, 0, message, args);
+  messageBuffer = malloc(strLength + 1);
+  vsprintf(messageBuffer, message, args);
+
+  errObj->errorMsg  = messageBuffer;
   errObj->errorCode = errCode;
+  
+  va_end(args);
   Throw(errObj);
 }
 

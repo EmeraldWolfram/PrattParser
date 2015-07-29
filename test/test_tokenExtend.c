@@ -31,7 +31,7 @@ void tearDown(void){}
 void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_PREFIX(void){
   OperatorToken* invert   = (OperatorToken*)createOperatorToken("~", INFIX);
   int thisSymbol          = *invert->symbol;
-  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  Attributes oprAttr      = operatorAttributesTable[thisSymbol];
   
   invert = (OperatorToken*)oprAttr.extend((Token*)invert, &oprAttr);
   
@@ -50,15 +50,16 @@ void test_extendSingleCharacterOperator_given_INVERT_and_Table_should_assign_70_
 void test_extendSingleCharacterOperator_given_INVERT_MUL_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
   OperatorToken* invert   = (OperatorToken*)createOperatorToken("~*", INFIX);
   int thisSymbol          = *invert->symbol;
-  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  Attributes oprAttr      = operatorAttributesTable[thisSymbol];
   
   Try{
     invert = (OperatorToken*)oprAttr.extend((Token*)invert, &oprAttr);
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '~*' is undefined!", err->errorMsg);
   }
+  freeError(err);
 }
 /**
  *  The extendDoubleCharacterOperator function will assign attribute to operator
@@ -106,8 +107,9 @@ void test_extendDoubleCharacterOperator_given_MUL_ADD_and_Table_should_throw_ERR
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '*+' is undefined!", err->errorMsg);
   }
+  freeError(err);
 }
 
 
@@ -129,8 +131,9 @@ void test_extendDoubleCharacterOperator_given_MUL_EQUAL_and_ADD_should_throw_ERR
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '*=+' is undefined!", err->errorMsg);
   }
+  freeError(err);
 }
 
 /**
@@ -183,8 +186,9 @@ void test_extendTripleCharacterOperator_given_ADD_DIV_should_throw_ERR_UNDEFINED
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '+/' is undefined!", err->errorMsg);
   }
+  freeError(err);
 }
 
 /**
@@ -204,8 +208,31 @@ void test_extendTripleCharacterOperator_given_INCR_XOR_should_throw_ERR_UNDEFINE
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '++^' is undefined!", err->errorMsg);
   }
+  freeError(err);
+}
+
+/**
+ *  The extendTripleCharacterOperator function will assign attribute to operator
+ *  can be 3 different operator function.
+ *  
+ *  Given the token '+=,', extendTripleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendTripleCharacterOperator_given_ADD_EQUAL_COMA_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* coma = (OperatorToken*)createOperatorToken("+=,", INFIX);
+  int thisSymbol      = *coma->symbol;
+  Attributes oprAttr  = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    coma = (OperatorToken*)oprAttr.extend((Token*)coma, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '+=,' is undefined!", err->errorMsg);
+  }
+  freeError(err);
 }
 
 /**
@@ -259,8 +286,56 @@ void test_extendQuadrupleCharacterOperator_given_LARGER_ADD_and_Table_should_thr
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '>+' is undefined!", err->errorMsg);
   }
+  freeError(err);
+}
+
+/**
+ *  The extendQuadrupleCharacterOperator function will assign attribute to operator
+ *  can be 4 different operator function.
+ *
+ *	Example,
+ *		extendQuadruple differentiate '>>' from '>', '>>=' and '>='
+ *  
+ *  Therefore, given the token '>=;', extendQuadrupleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendQuadrupleCharacterOperator_given_LARGER_EQUAL_SEMICOLON_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* larger = (OperatorToken*)createOperatorToken(">=;", INFIX);
+  int thisSymbol        = *larger->symbol;
+  Attributes oprAttr    = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    larger = (OperatorToken*)oprAttr.extend((Token*)larger, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '>=;' is undefined!", err->errorMsg);
+  }
+  freeError(err);
+}
+
+/**
+ *  The extendQuadrupleCharacterOperator function will assign attribute to operator
+ *  can be 4 different operator function.
+ *  
+ *  Given the token '>>!', extendQuadrupleCharacterOperator should throw ERR_UNDEFINED_OPERATOR
+ *
+ */
+void test_extendQuadrupleCharacterOperator_given_ROTATE_NOT_and_Table_should_throw_ERR_UNDEFINED_OPERATOR(void){
+  OperatorToken* rotate = (OperatorToken*)createOperatorToken("<<!", INFIX);
+  int thisSymbol        = *rotate->symbol;
+  Attributes oprAttr    = operatorAttributesTable[thisSymbol];
+  
+  Try{
+    rotate = (OperatorToken*)oprAttr.extend((Token*)rotate, &oprAttr);
+    TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '<<!' is undefined!", err->errorMsg);
+  }
+  freeError(err);
 }
 
 /**
@@ -280,8 +355,9 @@ void test_extendQuadrupleCharacterOperator_given_ROTATE_EQUAL_4_and_Table_should
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);
+    TEST_ASSERT_EQUAL_STRING("ERROR: Operator '>>=4' is undefined!", err->errorMsg);
   }
+  freeError(err);
 }
 
 /**
@@ -361,6 +437,7 @@ void test_extendExpression_given_Unknown_Token_and_Table_should_throw_ERR_UNKNOW
     TEST_ASSERT_EQUAL(ERR_UNKNOWN_TOKEN, err->errorCode);
     TEST_ASSERT_EQUAL_STRING("Can't resolve Unknown type token!", err->errorMsg);    
   }
+  freeError(err);
 }
 
 /**
@@ -378,8 +455,9 @@ void test_extendErrorOperator_should_always_throw_ERR_UNDEFINED_OPERATOR(void){
     TEST_FAIL_MESSAGE("Expected ERR_UNDEFINED_OPERATOR but no error were thrown");
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("This operator is undefined!", err->errorMsg);    
+    TEST_ASSERT_EQUAL_STRING("This operator '@' is undefined!", err->errorMsg);    
   }
+  freeError(err);
 }
 
 /**
@@ -396,8 +474,10 @@ void test_extendCharacterErrorOperator_should_always_throw_ERR_ILLEGAL_CHARACTER
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error were thrown");
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Character operator is illegal!", err->errorMsg);    
+    TEST_ASSERT_EQUAL_STRING("Character operator 'G' is illegal!", err->errorMsg);    
   }
+  freeError(err);
+
 }
 
 /**
@@ -414,11 +494,47 @@ void test_extendIntegerErrorOperator_should_always_throw_ERR_ILLEGAL_INTEGER(voi
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error were thrown");
   } Catch(err){
     TEST_ASSERT_EQUAL(ERR_ILLEGAL_INTEGER, err->errorCode);
-    TEST_ASSERT_EQUAL_STRING("Integer operator is illegal!", err->errorMsg);    
+    TEST_ASSERT_EQUAL_STRING("Integer operator '76' is illegal!", err->errorMsg);    
   }
+  freeError(err);
+
 }
 
+/**
+ *  This test use to test the error ERR_ILLEGAL_PREFIX is thrown when errorNud is called
+ */
+void test_errorNud_should_always_throw_ERR_ILLEGAL_PREFIX(void){
+  OperatorToken* testToken  = (OperatorToken*)createOperatorToken("/", INFIX);
 
+  Try{
+    Attributes attr = tokenTypeAttributesTable[testToken->type];
+    testToken = (OperatorToken*)attr.extend((Token*)testToken, &attr);
+    testToken = (OperatorToken*)testToken->nud((Token*)testToken);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_PREFIX but no error were thrown");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_ILLEGAL_PREFIX, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("ERROR: '/' is an illegal prefix!", err->errorMsg);    
+  }
+  freeError(err);
+}
+
+/**
+ *  This test use to test the error ERR_ILLEGAL_ is thrown when errorNud is called
+ */
+void test_errorLed_should_always_throw_ERR_UNEXPECTED_EXPRESSION(void){
+  Token* testToken  = createIntegerToken(3);
+
+  Try{
+    Attributes attr = tokenTypeAttributesTable[testToken->type];
+    testToken = attr.extend(testToken, &attr);
+    testToken = testToken->led(testToken);
+    TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error were thrown");
+  } Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_EXPRESSION, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained expression!", err->errorMsg);    
+  }
+  freeError(err);
+}
 
 
 

@@ -19,7 +19,7 @@ typedef struct{
 } ErrorObject;
 
 void freeError(ErrorObject *errObj);
-void ThrowError(char *message, ErrorCode errCode);
+void ThrowError(ErrorCode errCode, char *message, ...);
 
 #endif // ErrorObject_H
 

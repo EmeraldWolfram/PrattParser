@@ -13,7 +13,7 @@ void tearDown(void)
 void test_ThrowError_throw_ERR_NOT_OPERATOR_should_get_an_error_object_containing_them(void){
   ErrorObject* err;
   Try{
-    ThrowError("This operator is undefined!", ERR_UNDEFINED_OPERATOR);
+    ThrowError(ERR_UNDEFINED_OPERATOR, "This operator is undefined!");
     TEST_FAIL_MESSAGE("Expecting ERR_UNDEFINED_OPERATOR but none thrown.");
   }Catch(err){
     TEST_ASSERT_EQUAL(ERR_UNDEFINED_OPERATOR, err->errorCode);
