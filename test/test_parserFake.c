@@ -437,3 +437,375 @@ void test_parser_with_2_INCREMENT_EOT_should_return_INCREMENT_2(void){
   TEST_ASSERT_EQUAL_STRING("++",((OperatorToken*)testToken)->symbol);
   TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
 }
+
+/**
+ *
+ *  Obtain tokens of 2 , --
+ *
+ *  This test check whether parser() function can differentiate INFIX and POSTFIX
+ *  The parser should linked up and form a token tree as follow
+ *
+ *      (--)
+ *      /
+ *    (2)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_INCREMENT_EOT_should_change_INFIX_to_POSTFIX(void){
+  Token* table[] = { 
+    createIntegerToken(2),
+    createOperatorToken("--", INFIX),
+    createOperatorToken("$", POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("--",POSTFIX),((OperatorToken*)testToken));
+  TEST_ASSERT_EQUAL(2,((IntegerToken*)((OperatorToken*)testToken)->token[0])->value);
+}
+
+
+/**
+ *
+ *  Obtain tokens of 2 , ++ , ++
+ *
+ *  This test check whether parser() function can link two consecutive POSTFIX
+ *  The parser should linked up and form a token tree as follow
+ *        
+ *        (++)
+ *        /
+ *      (++)
+ *      /
+ *    (2)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_INCREMENT_INCREMENT_EOT_should_return_2_inc_inc(void){
+  Token* table[] = {   
+    createIntegerToken(2),
+    createOperatorToken("++", INFIX),
+    createOperatorToken("++", INFIX),
+    createOperatorToken("$", POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  increment = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("++",POSTFIX),((OperatorToken*)testToken));
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("++",POSTFIX),increment);
+  TEST_ASSERT_EQUAL(2,((IntegerToken*)increment->token[0])->value);
+}
+
+
+/**
+ *
+ *  Obtain tokens of ++ , 2 , * , 6 , -- , - , 8
+ *  This test check parser() can differentiate between PREFIX, INFIX and POSTFIX as the '++' in this test
+ *  is a PREFIX while the '--' should be a POSTFIX. At the same time, testing parser() function can link
+ *  to INFIX correctly.
+ *
+ *  The parser should linked up and form a token tree as follow
+ *
+ *
+ *             (-)
+ *            /   \
+ *          (*)   (8)
+ *          / \
+ *      (++)  (--)
+ *      /     /
+ *    (2)   (6)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_with_Answer_of_DECR_6_then_SUB_8(void){
+  Token* table[] = { 
+    createOperatorToken("++", INFIX),
+    createIntegerToken(2),
+    createOperatorToken("*", INFIX),
+    createIntegerToken(6),
+    createOperatorToken("--", INFIX),
+    createOperatorToken("-", INFIX),  
+    createIntegerToken(8),
+    createOperatorToken("$", POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+     
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  multiply = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("-",INFIX), createOperatorToken("*",INFIX), createIntegerToken(8), (OperatorToken*)testToken);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("++",PREFIX), createOperatorToken("--",POSTFIX), multiply);
+  OperatorToken* token_INCR = ((OperatorToken*)multiply->token[0]);
+  OperatorToken* token_DECR = ((OperatorToken*)multiply->token[1]);
+  TEST_ASSERT_EQUAL(2, ((IntegerToken*)token_INCR->token[0])->value);
+  TEST_ASSERT_EQUAL(6, ((IntegerToken*)token_DECR->token[0])->value);
+}
+
+/** character '64' had been recognized as operator token.
+ *  Check whether the parser will assign extendIntegerErrorOperator to OperatorToken '64' 
+ */
+void test_parser_with_2_64_3_EOT_to_throw_ERR_ILLEGAL_INTEGER(void){
+  Token* table[] = {  
+    createIntegerToken(2),
+    createOperatorToken("64",INFIX),
+    createIntegerToken(3),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+          
+  Try{
+    Token* testToken = malloc(sizeof(Token*));  
+    testToken = parser(0);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error thrown!");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_ILLEGAL_INTEGER, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Integer operator is illegal!",  err->errorMsg);
+    freeError(err);
+  }
+}
+
+/**
+ *  character 'a' had been recognized as operator token.
+ *  Check whether the parser will assign extendCharacterErrorOperator to OperatorToken 'a' 
+ */
+void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
+  Token* table[] = {  
+    createIntegerToken(2),
+    createOperatorToken("a",INFIX),
+    createIntegerToken(3),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+          
+  Try{
+    Token* testToken = malloc(sizeof(Token*));  
+    testToken = parser(0);
+    TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_ILLEGAL_CHARACTER, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Character operator is illegal!",  err->errorMsg);
+    freeError(err);
+  }
+}
+
+/**
+ *  Obtain tokens of ( , 2 , + , 3 , ) , * , 4
+ *                                   ^
+ *                                   This token will be ignored
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '(' can link in Nud function
+ *
+ *
+ *            (*)
+ *           /  \
+ *         (()  (4)
+ *        /
+ *      (+)
+ *     /  \
+ *   (2)  (3)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MUL_4(void){
+  Token* table[] = {
+    createOperatorToken("(",INFIX),
+    createIntegerToken(2),
+    createOperatorToken("+",INFIX),
+    createIntegerToken(3),
+    createOperatorToken(")",INFIX),
+    createOperatorToken("*",INFIX),
+    createIntegerToken(4),
+    createOperatorToken("$",POSTFIX),
+  };
+  initTokenizer(table);
+  
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("(", PREFIX), createIntegerToken(4), (OperatorToken*)testToken);
+  open = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  add  = (OperatorToken*)open->token[0];
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("+", INFIX), (OperatorToken*)open->token[0])
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
+}
+
+/**
+ *  Obtain tokens of 2 , ( , 3 , * , 4 , )
+ *                                       ^
+ *                                       This token will be ignored
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '(' can link in Led function
+ *
+ *
+ *            (()
+ *           /  \
+ *         (2)  (*)
+ *              / \
+ *            (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_OPEN_3_MUL_4_CLOSE_EOT_should_return_3_MUL_4_then_OPEN_2(void){
+  Token* table[] = { 
+    createIntegerToken(2),
+    createOperatorToken("(",INFIX),
+    createIntegerToken(3),
+    createOperatorToken("*",INFIX),
+    createIntegerToken(4),
+    createOperatorToken(")",INFIX),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+// ********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("(",INFIX), createIntegerToken(2), createOperatorToken("*", INFIX), (OperatorToken*)testToken);
+  multiply = (OperatorToken*)((OperatorToken*)testToken)->token[1];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createIntegerToken(3), createIntegerToken(4), multiply);  
+}
+
+/**
+ *  Obtain tokens of ( , 2 , + , 3 , ) , 4
+ *                                   ^
+ *                                   This token will be ignored
+ *
+ *  The parser should linked up (2 + 3) and throw ERR_UNEXPECTED_EXPRESSION as it expect an operator after ")"
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_EXPRESSION(void){
+  Token* table[] = { 
+    createOperatorToken("(",INFIX),
+    createIntegerToken(2),
+    createOperatorToken("+",INFIX),
+    createIntegerToken(3),
+    createOperatorToken(")",INFIX),
+    createIntegerToken(4),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+
+  Try{
+    Token* testToken = malloc(sizeof(Token*));
+    testToken = parser(0);
+    TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error thrown!");
+  }Catch(err){
+    TEST_ASSERT_EQUAL(ERR_UNEXPECTED_EXPRESSION, err->errorCode);
+    TEST_ASSERT_EQUAL_STRING("Expected operator token but obtained expression!",  err->errorMsg);
+    freeError(err);
+  }
+}
+
+/**
+ *
+ *  Obtain tokens of 2 , + , 3 , ) , * , 4
+ *
+ *  The parser will automatically apply a hidden open bracket at the first place
+ *  to do the operation before the close bracket.
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '+' can link to another OperatorToken ('*' in this case)
+ *  
+ *
+ *      (*)
+ *      / \
+ *    (+) (4)
+ *    / \
+ *  (2) (3)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_2_ADD_3_CLOSEBRACKET_MUL_4_EOT_should_return_3_CLOSEBRACKET_MUL_4_then_ADD_2(void){
+  Token* table[] = {  
+    createIntegerToken(2),
+    createOperatorToken("+",INFIX),
+    createIntegerToken(3),
+    createOperatorToken(")",NOFIX),
+    createOperatorToken("*",INFIX),
+    createIntegerToken(4),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);  
+
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+//********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("*",INFIX), createOperatorToken("+", INFIX), createIntegerToken(4), (OperatorToken*)testToken);
+  add = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createIntegerToken(3), add);  
+}
+
+/**
+ *
+ *  Obtain tokens of ( , 2 , + , 3 , / , 4
+ *
+ *  The parser will automatically apply a hidden close bracket at the last place
+ *  to complete the bracket.
+ *
+ *  The parser should linked up and form a token tree as follow
+ *  This test check if '+' can link to another OperatorToken ('*' in this case)
+ *
+ *          (()
+ *          /
+ *        (+)
+ *        / \
+ *      (2) (/)
+ *          / \
+ *        (3) (4)
+ *
+ *  Note: Symbol "$" was used here to indicate the end of Token
+ */
+void test_parser_with_OPEN_2_ADD_3_DIV_4_EOT_should_return_OPEN_3_DIV_4_then_ADD_2(void){
+  Token* table[] = {
+    createOperatorToken("(", INFIX),
+    createIntegerToken(2),
+    createOperatorToken("+",INFIX),
+    createIntegerToken(3),
+    createOperatorToken("/",INFIX),
+    createIntegerToken(4),
+    createOperatorToken("$",POSTFIX),
+    NULL
+  };
+  initTokenizer(table);
+  
+  Token* testToken = malloc(sizeof(Token*));
+  testToken = parser(0);
+
+// ********************************************* START TEST ************************************************************* 
+  TEST_ASSERT_NOT_NULL(testToken);
+  
+  TEST_ASSERT_EQUAL_OPERATOR(createOperatorToken("(",PREFIX), (OperatorToken*)testToken);
+  add = (OperatorToken*)((OperatorToken*)testToken)->token[0];
+  divide = (OperatorToken*)add->token[1];
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("+",INFIX), createIntegerToken(2), createOperatorToken("/", INFIX), add);
+  TEST_ASSERT_EQUAL_TOKEN_TREE(createOperatorToken("/",INFIX), createIntegerToken(3), createIntegerToken(4), divide);  
+}
+
