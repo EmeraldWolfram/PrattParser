@@ -54,7 +54,7 @@ void test_parser_with_2_ADD_3_EOT_should_return_2_ADD_3(void){
   bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken);      //In parser(20), RETURN to parser(0) and completed (2 + 3)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT (End of Token) and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -96,7 +96,7 @@ void test_parser_with_2_ADD_3_SUB_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
   bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);         //In parser(20), RETURN to parser(0) and completed [(2 + 3) - 4]
   peepToken_ExpectAndReturn((Token*)lastOprToken);
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -140,7 +140,7 @@ void test_parser_with_2_ADD_3_MUL_4_EOT_should_return_3_MUL_4_then_ADD_2(void){
   peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(20), peep '$' to check for EOT and RETURN to parser(0)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -194,7 +194,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_EOT_should_return_Token_Tree_SUB_5(voi
   
   peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), check for EOT and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -272,7 +272,7 @@ void test_parser_with_2_ADD_3_MUL_4_SUB_5_DIV_6_ADD_7_EOT_should_return_Token_Tr
   
   peepToken_ExpectAndReturn((Token*)lastOprToken);                            //In parser(0), peep '$' to check EOT and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -315,7 +315,7 @@ void test_parser_with_minus_3_EOT_should_return_SUB_3(void){
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(100), peep '$' to check binding power, RETURN to parser(0) and complete (-3)
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(0), peep '$' to check binding power and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -349,7 +349,7 @@ void test_parser_with_NOT_3_EOT_should_change_INFIX_NOT_to_PREFIX_NOT(void){
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(100), peep '$' to check binding power, RETURN to parser(0) and complete (-3)
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(0), peep '$' to check binding power and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -387,7 +387,7 @@ void test_parser_with_minus_minus_3_EOT_should_change_return_neg_neg_3(void){
   peepToken_ExpectAndReturn((Token*)lastOprToken);                  //In parser(100), peep '$' to check binding power, RETURN to parser(0)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                  //In parser(0), peep '$' to check binding power and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -437,7 +437,7 @@ void test_parser_with_minus_3_MUL_minus_4_EOT_should_return_token_NEG_3_ADD_POS_
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(20), peep '$' to check EOT and RETURN to parser(0)
   peepToken_ExpectAndReturn((Token*)lastOprToken);        //In parser(0), peep '$' to check EOT and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -471,7 +471,7 @@ void test_parser_with_2_INCREMENT_EOT_should_return_INCREMENT_2(void){
   bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //In parser(0), formed (2 ++)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -502,7 +502,7 @@ void test_parser_with_2_INCREMENT_EOT_should_change_INFIX_to_POSTFIX(void){
   bindingPowerStrongerThanPreviousToken(testOprToken, testIntToken);    //In parser(0), formed (2 ++)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -538,7 +538,7 @@ void test_parser_with_2_INCREMENT_INCREMENT_EOT_should_return_2_inc_inc(void){
   getToken_ExpectAndReturn((Token*)testOprToken1);                      
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
 
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -597,7 +597,7 @@ void test_parser_with_INCR_2_MUL_6_DECR_SUB_8_EOT_should_return_INCR_2_then_MUL_
   bindingPowerWeakerThanPreviousToken(lastOprToken,testIntToken_8);     //In parser(20), RETURN to parser(0) and completed [((++2) * (--6)) - 8]
   peepToken_ExpectAndReturn((Token*)lastOprToken);                      //In parser(0), peep '$' to check for EOT and RETURN Token Tree
  
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -624,7 +624,7 @@ void test_parser_with_2_64_3_EOT_to_throw_ERR_ILLEGAL_INTEGER(void){
   peepToken_ExpectAndReturn((Token*)testOprToken); 
           
   Try{
-    Token* testToken = malloc(sizeof(Token*));  
+    Token* testToken = malloc(sizeof(Token));  
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_INTEGER but no error thrown!");
   }Catch(err){
@@ -647,7 +647,7 @@ void test_parser_with_2_a_3_EOT_to_throw_ERR_ILLEGAL_CHARACTER(void){
   peepToken_ExpectAndReturn((Token*)testOprToken); 
           
   Try{
-    Token* testToken = malloc(sizeof(Token*));  
+    Token* testToken = malloc(sizeof(Token));  
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_ILLEGAL_CHARACTER but no error thrown!");
   }Catch(err){
@@ -700,7 +700,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MU
   bindingPowerWeakerThanPreviousToken(lastOprToken, lastIntToken_4);        //In parser(30), RETURN to parser(0) and completed (2 + 3) * 4
   peepToken_ExpectAndReturn((Token*)lastOprToken);                          //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -748,7 +748,7 @@ void test_parser_with_2_OPEN_3_MUL_4_CLOSE_EOT_should_return_3_MUL_4_then_OPEN_2
   getToken_ExpectAndReturn((Token*)testOprToken_CLOSE);                      //RETURN to parser(0) and completed 2 (3 * 4)
   peepToken_ExpectAndReturn((Token*)lastOprToken);                           //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 // ********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -786,7 +786,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_4_EOT_should_throw_ERR_UNEXPECTED_EXPRE
   peepToken_ExpectAndReturn((Token*)lastIntToken_4);                        //In parser(0), peep '*' for comparison
 
   Try{
-    Token* testToken = malloc(sizeof(Token*));
+    Token* testToken = malloc(sizeof(Token));
     testToken = parser(0);
     TEST_FAIL_MESSAGE("Expected ERR_UNEXPECTED_EXPRESSION but no error thrown!");
   }Catch(err){
@@ -839,7 +839,7 @@ void test_parser_with_2_ADD_3_CLOSEBRACKET_MUL_4_EOT_should_return_3_CLOSEBRACKE
   bindingPowerWeakerThanPreviousToken(lastOprToken,lastIntToken);               //In parser(30), RETURN to parser(0) and completed (2 + 3) * 4
   peepToken_ExpectAndReturn((Token*)lastOprToken);                              //In parser(0), peep '$' to check for EOT and RETURN Token Tree
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 //********************************************* START TEST ************************************************************* 
   TEST_ASSERT_NOT_NULL(testToken);
@@ -889,7 +889,7 @@ void test_parser_with_OPEN_2_ADD_3_DIV_4_EOT_should_return_OPEN_3_DIV_4_then_ADD
   peepToken_ExpectAndReturn((Token*)lastOprToken);                              //In parser(1), RETURN to parser(0) and completed ( 2 + (3 / 4) ) HIDDEN CLOSE BRACKET added
   peepToken_ExpectAndReturn((Token*)lastOprToken);                              //In parser(1), peep '$' to check for EOT and RETURN Token Tree
   
-  Token* testToken = malloc(sizeof(Token*));
+  Token* testToken = malloc(sizeof(Token));
   testToken = parser(0);
 
 // ********************************************* START TEST ************************************************************* 

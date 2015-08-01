@@ -122,13 +122,17 @@ Token* errorLed(Token* myself){
   assert(myself != NULL);
   switch(myself->type){
     case TOKEN_INTEGER_TYPE:
-    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained integer %d!", ((IntegerToken*)myself)->value);
+      ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained integer %d!", ((IntegerToken*)myself)->value);
+      break;
     case TOKEN_FLOAT_TYPE:
-    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained float %f!", ((FloatToken*)myself)->value);
+      ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained float %f!", ((FloatToken*)myself)->value);
+      break;
     case TOKEN_STRING_TYPE:
-    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained string %s!", ((StringToken*)myself)->name);
+      ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained string %s!", ((StringToken*)myself)->name);
+      break;
     case TOKEN_IDENTIFIER_TYPE:
-    ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained identifier %s!", ((StringToken*)myself)->name);
+      ThrowError(ERR_UNEXPECTED_EXPRESSION, "Expected operator token but obtained identifier %s!", ((StringToken*)myself)->name);
+      break;
   }
   return myself;
 }
@@ -274,8 +278,9 @@ Token* extendExpression(Token *thisExpression, Attributes *attr){
     thisExpression  = attr->extend(thisExpression, attr);
   }
   else{
-    thisExpression->nud = attr->nud;
-    thisExpression->led = attr->led;
+    thisExpression->execute = attr->execute;
+    thisExpression->nud     = attr->nud;
+    thisExpression->led     = attr->led;
   }
   return thisExpression;
 }
