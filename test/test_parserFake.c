@@ -625,6 +625,7 @@ void test_parser_with_OPEN_2_ADD_3_CLOSE_MUL_4_EOT_should_return_2_ADD_3_then_MU
     createOperatorToken("*",INFIX),
     createIntegerToken(4),
     createOperatorToken("$",POSTFIX),
+    NULL
   };
   initTokenizer(table);
   
