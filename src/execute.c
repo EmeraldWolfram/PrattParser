@@ -12,10 +12,16 @@ char* executeSingle(Token* token){
   // printf("Single get called\n");
   char* mainStr     = malloc(sizeof(char)*100);
   char* minorStr    = malloc(sizeof(char)*50);
-  Token* minorToken  = ((OperatorToken*)token)->token[0];
+  Token* minorToken = ((OperatorToken*)token)->token[0];
   minorStr          = minorToken->execute(minorToken);  
   int n;
-  n = sprintf(mainStr, "(%s%s)", ((OperatorToken*)token)->symbol, minorStr);
+  
+  if(strcmp(((OperatorToken*)token)->symbol, "(") == 0)
+    n = sprintf(mainStr, "(%s)", minorStr);
+  else if(strcmp(((OperatorToken*)token)->symbol, "[") == 0)
+    n = sprintf(mainStr, "[%s]", minorStr);
+  else
+    n = sprintf(mainStr, "(%s%s)", ((OperatorToken*)token)->symbol, minorStr);
   return mainStr;
 }
 
@@ -32,7 +38,15 @@ char* executeDouble(Token* token){
   
   leftMinorStr    = leftMinorToken->execute(leftMinorToken);
   rightMinorStr   = rightMinorToken->execute(rightMinorToken);
-  n = sprintf(mainStr, "(%s %s %s)", leftMinorStr, ((OperatorToken*)token)->symbol, rightMinorStr);
+  
+  if(strcmp(((OperatorToken*)token)->symbol, "(") == 0){
+    n = sprintf(mainStr, "(%s (%s))", leftMinorStr, rightMinorStr);
+  }
+  else if(strcmp(((OperatorToken*)token)->symbol, "[") == 0){
+    n = sprintf(mainStr, "(%s [%s])", leftMinorStr, rightMinorStr);
+  }
+  else
+    n = sprintf(mainStr, "(%s %s %s)", leftMinorStr, ((OperatorToken*)token)->symbol, rightMinorStr);
 
   return mainStr;
 }
