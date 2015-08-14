@@ -2,9 +2,9 @@
 #define Common_H
 
 #ifdef TEST
-# define INLINE
+#define INLINE
 #else
-# define INLINE   inline
+#define INLINE   inline
 #endif  // TEST
 
 #endif // Common_H
