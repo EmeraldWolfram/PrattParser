@@ -17,7 +17,7 @@ extern Attributes tokenTypeAttributesTable[];
  *  and link up a token tree according to the OPERATOR precedence.                      *
  *                                                                                      *
  *  example1: precedence of multiply(*) is higher than add(+),                          *
- *           so when an equation "2 + 3 * 4" entered to the parser,                     *
+ *            so when an equation "2 + 3 * 4" entered to the parser,                    *
  *            it will link (3 * 4) and form a brunch,                                   *
  *            then parser will link the brunch to integer "2" by (+)                    *
  *            last, it will form a tree as shown below.                                 *
@@ -30,7 +30,7 @@ extern Attributes tokenTypeAttributesTable[];
  *                    (3) (4)                                                           *
  *                                                                                      *                                                                                       *
  *  example2: precedence of sub(-) is smaller than multiply(*),                         *
- *           so when an equation "2 * 3 - 4" entered to the parser,                     *
+ *            so when an equation "2 * 3 - 4" entered to the parser,                    *
  *            it will link (2 * 3) and form a brunch,                                   *
  *            then parser will link the brunch to integer "2" by (-)                    *
  *            last, it will form a tree as shown below.                                 *

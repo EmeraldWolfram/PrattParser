@@ -47,7 +47,7 @@
 
 
 Token *createOperatorToken(char *symbol, Arity AR){  
-  OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * 2);
+  OperatorToken* op = malloc(sizeof(OperatorToken)+ sizeof(Token*) * (AR == INFIX ? 2 : 1));
   
   op->type    = TOKEN_OPERATOR_TYPE;
   op->symbol  = symbol;

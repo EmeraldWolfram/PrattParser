@@ -1,6 +1,7 @@
 #include "customAssertion.h"
 #include "unity.h"
 #include "Token.h"
+#include <string.h>
 
 
 void customTestAssertTokenTree(Token* expectedOper, Token* token1, Token* token2, OperatorToken *actualOper, int lineNumber){
