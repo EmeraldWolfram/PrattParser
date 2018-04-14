@@ -4,9 +4,9 @@ What is needed in a compiler?
 --------------
 Before going into the detail, lets start with how a compiler work.
 There were 3 phase in the Compiler:
--Phase 1: Tokenizing the source file
--Phase 2: Parsing token with precedence (What this repo is doing)
--Phase 3: Executing with the Processor provided instruction code (x86 or ARM or your own custom designed RTL processor)
+- Phase 1: Tokenizing the source file
+- Phase 2: Parsing token with precedence (What this repo is doing)
+- Phase 3: Executing with the Processor provided instruction code (x86 or ARM or your own custom designed RTL processor)
 
 Computer is dumb, there will do the first thing the see instead of using precedence control.
 For example, 
@@ -18,8 +18,8 @@ Therefore, a parser is needed to check operator precedence and link up a Token T
 
 A Tokenizer will parse a file into a Serial Chain of Token in FIFO (First In First Out) manner.
 This project assumed that the Tokenizer was there and the Tokenizer provide us two API:
-1. getToken()   - Return caller the head Token and remove from the Serial Chain
-2. peepToken()  - Return the pointer to the head Token but remain the Token in the Serial Chain
+- getToken()   - Return caller the head Token and remove from the Serial Chain
+- peepToken()  - Return the pointer to the head Token but remain the Token in the Serial Chain
 
 Detail Implementation
 -------
@@ -27,8 +27,8 @@ The parser(0) function is a recursive function where it will call back itself to
 In this project '$' was used as the End of Live (EoL) Token.
 
 PrattParser rely on 2 recursive function pointer to do the job (what u guys call method in class for higher level language like JAVA)
-1. nud()
-2. led()
+- nud()
+- led()
 
 nud() will 
 return the value if it is not an expression like (integer, double or float)
